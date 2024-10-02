@@ -1,0 +1,21 @@
+body {
+	margin: 0;
+	background: rgb(255, 255, 255);
+	text-align: center;
+	font-family: 'cmunrm', sans-serif;
+}
+div {
+	text-align: justify;
+	text-justify: inter-word;
+}
+
+h1, h2, h3 {
+    font-family: 'cmunrm', serif;
+}
+
+@font-face {
+    font-family: 'MyCustomFont';
+    src: url('/assets/fonts/cmunrm.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
