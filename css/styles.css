@@ -6,3 +6,8 @@ body {
 	background: rgb(255, 255, 255);
     text-align: justify;
 }
+
+.canvas-container {
+	margin-bottom: 400px;
+	text-align: justify;
+}

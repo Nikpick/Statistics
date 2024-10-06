@@ -1,0 +1,289 @@
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Homework #1</title>
+	<link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+	<a href="index.html">Home</a>
+	<h1>Statistics - Homework #1 [Y.2024-2025]</h1>
+	<h2>Basic Notions</h2>
+
+	<h3>Population</h3>
+		
+	<p><b>What is it?</b></p>
+
+	<p>Population is the complete set of individuals, whether that group comprises a nation or a group of people with a common characteristic. In statistics we use it to define the set (a statistically significant portion) from which a random sample will be taken. Therefore, in this case, the definition of population becomes "a set of similar items or events which is of interest for some question or experiment".</p>
+	<p><b>How do we measure it?</b></p>
+	<p>Taking data of the whole population is infeasible as it would require surveys, measurements, observation, or other methods that would increase exponentially the costs of the experiment due to the large number of the population itself. Therefore as said before a sample of that population is taken that is thought to be representative enough to gain data and to be less biased as possible.</p>
+	<p><b>Population mean</b></p>
+	<p>A population mean is simply the average of whatever population sample you have chosen beforehand and it is a measure of the central tendency either of a probability distribution or of a random variable characterized by that distribution</p>
+	<h3>Statistical Units</h3>
+	<p>In statistics, a unit refers to a single member of a group of entities being studied. It serves as the foundation for developing the concept of a “random variable.” Examples of units include an individual person, animal, plant, manufactured product, or country, all of which are part of a larger group under investigation.</p>
+	<p>Units can be classified as either experimental units or sampling units:</p>
+	<p>❶ An experimental unit is one member of a set of objects that are initially identical, with each object then subjected to one of several treatments in an experiment. In simple terms, it is the smallest entity that receives the experimental treatment.</p>
+	<p>❷ A sampling unit (or unit of observation) is an object selected from a statistical population, commonly used in survey sampling and opinion polls.</p>
+	<h3>Distribution</h3>
+	<p>In statistics and probability, a distribution describes how values of a random variable are spread across a range of possible outcomes. It provides insight into the likelihood of different outcomes, helping to summarize data and guide predictions.</p>
+	<p>Distributions can be broadly categorized into probability distributions and frequency distributions. A probability distribution defines the likelihood of various outcomes for a random variable. Discrete distributions, like the binomial or Poisson distributions, apply to variables that take specific values, while continuous distributions, such as the normal or exponential distributions, apply to variables that can take any value within a range. A frequency distribution, on the other hand, represents how often certain values appear in a dataset.</p>
+	<p>Key characteristics of a distribution include the mean (the central tendency), variance (a measure of how data is spread), standard deviation (the average distance from the mean), skewness (indicating asymmetry), and kurtosis (measuring the presence of outliers).</p>
+	<p>Some common distributions include the normal distribution, which is symmetrical and bell-shaped, and the binomial distribution, which models outcomes in a fixed number of trials with two possible results. The Poisson distribution deals with the occurrence of events over a fixed interval, while the uniform distribution assumes all outcomes are equally likely within a given range.</p>
+	<h2>Notion of average</h2>
+	<p>The notion of average in mathematics refers to the central value or typical representation of a set of numbers. </p>
+	<h3>Mean</h3>
+	<p>The arithmetic mean is what most people refer to as the average. It is calculated by adding all the values in a dataset and dividing the sum by the number of values. This is useful for data that is evenly distributed but can be skewed by extreme values (outliers).</p>
+	<p>Example: For the numbers 2, 4, and 6, the mean is (2 + 4 + 6) / 3 = 4.</p>
+	<h3>Median</h3>
+	<p>The median is the middle value in a dataset when the numbers are arranged in ascending or descending order. If the dataset has an odd number of values, the median is the exact middle value. If it has an even number, the median is the average of the two middle values. The median is not affected by extreme values, making it useful for skewed distributions.</p>
+	<p>Example: In the set 1, 3, 7, the median is 3. In the set 1, 3, 7, 9, the median is (3 + 7) / 2 = 5.</p>
+	<h3>Mode</h3>
+	<p>The mode is the most frequently occurring value in a dataset. A dataset can have more than one mode if multiple values appear with the same frequency (multimodal), or no mode if all values are different. Mode is often used for categorical data.</p>
+	<p>Example: In the set 1, 2, 2, 3, the mode is 2.</p>
+	<p>Averages are used extensively in data analysis and statistics to represent overall trends, but calculating them, especially on computers, can introduce challenges due to floating-point representation.</p>
+	<p>Floating-point representation is a way computers handle real numbers. Because computers have limited precision, not all decimal numbers can be represented exactly, leading to rounding errors. These small inaccuracies can accumulate, especially when performing many arithmetic operations, like summing a large dataset.</p>
+	<p>One significant issue related to floating-point calculations is catastrophic cancellation. This happens when subtracting two nearly equal numbers, resulting in a loss of significant digits and introducing large relative errors. For instance, if two large numbers are close in value, subtracting them can yield a very small result, but the precision loss can distort the outcome.</p>
+	<p>Numerical methods are developed to minimize these errors. Donald Knuth, a pioneer in computer science, contributed extensively to addressing computational problems like these. His work in numerical analysis emphasizes careful algorithm design to reduce the effects of rounding and catastrophic cancellation. Some solutions include rearranging arithmetic operations to avoid subtracting similar numbers or using higher-precision formats when necessary.</p>
+	<h2>Servers-Hackers Model</h2>
+	<p>We are simulating a scenario with <b><i>n</i></b> servers and <b><i>m</i></b> attackers, where each hacker has a probability <b><i>p</i></b> of successfully penetrating any given server. The goal is to visually represent this process: if a hacker fails to penetrate a server, the line remains flat, while a successful breach will cause a jump to 1 on the graph. By experimenting with different values of <b><i>n</i></b>, <b><i>m</i></b> and <b><i>p</i></b> we can observe how often the hacker reaches different levels of penetration over time. </p>
+	<p>Click on "Simulate" after having filled the necessary fields.</p>
+	<div class="canvas-container">
+		<canvas id="myChart" width="100" height="100"></canvas>
+		<canvas id="secondChart" width="100" height="100"></canvas>
+	</div>
+	
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.js"></script>
+	
+
+	<form action="">
+		<label for="n_Value">N (Servers)</label>
+		<input id="n_Value" type="number" value="10" min="1" max="100" name="n Value" required>
+		<label for="m_Value">M (Hackers)</label>
+		<input id="m_Value" type="number" value="5" min="1" max="100" name="m Value"  required placeholder="Insert M value (Hackers)">
+		<label for="p_Value">P (Probability)</label>
+		<input id="p_Value" type="number" value="0.5" min="0.01" max="1.00" name="p Value" required step="0.01" placeholder="Insert P value (Probability)">
+		<input type="submit" value="Simulate">
+	</form>
+
+	<script>
+		// Reference the canvas element where the chart will be drawn
+		const ctx = document.getElementById('myChart');
+		const ctxSecond = document.getElementById('secondChart');
+	</script>
+
+	<script>
+		let chartInstance = null;
+		let globalData = [];
+		// Function to generate random colors for the lines
+		function getRandomColor() {
+			const letters = '0123456789ABCDEF';
+			let color = '#';
+			for (let i = 0; i < 6; i++) {
+				color += letters[Math.floor(Math.random() * 16)];
+			}
+			return color;
+		}
+
+		function generateChart(totalServers, probabilities) {
+
+			if (chartInstance) {
+				chartInstance.destroy(); // Cancel previous chart if any exist
+			}
+			// Adjust the parent element's height and width for the chart canvas
+			myChart.parentNode.style.height = '400px';
+			myChart.parentNode.style.width = '800px';
+
+			// Data container for multiple attackers
+			const datasets = [];
+			const totalTime = totalServers
+			// Loop through each attacker
+			probabilities.forEach((p, index) => {
+				// Initialize the data array with time steps and penetration status
+				const data = [];
+				let penetratedServers = 0;  // Start with no servers penetrated
+
+				// Simulate the penetration process over time
+				for (let t = 0; t <= totalServers; t++) {
+					const randomValue = Math.random();
+					if (randomValue <= p) {
+						penetratedServers++;
+					}
+					data.push({ x: t, y: penetratedServers });
+				}
+
+				globalData.push({
+					label: `Attacker ${index + 1}`,
+					data: data
+				});
+
+				// Add the data to the datasets array with unique color and label
+				datasets.push({
+					label: `Attacker ${index + 1}`,
+					borderColor: getRandomColor(),
+					borderWidth: 1,
+					radius: 0,
+					data: data,
+				});
+			});
+
+			// Get the context (2D rendering context) of the canvas element to draw the chart
+			const ctx = document.getElementById('myChart').getContext('2d');
+		
+			// Define the chart configuration object
+			const config = {
+				type: 'line',
+				data: { datasets },
+				options: {
+					interaction: {
+						intersect: false       // Ensure that interactions don't highlight 	intersections between datasets
+					},
+					plugins: {
+						legend: false          // Disable the legend (no need to show the dataset 	names)
+					},
+					scales: {
+						xAxes: [{
+							title: {
+								display: true,
+								text: 'Time (Attempts)'  // Label the x-axis
+							},
+							type: 'linear',
+							beginAtZero: true,
+							max: totalTime,
+							ticks: {
+								autoSkip: false,  // Prevent skipping of labels
+								stepSize: 5,      // Show labels every 10 time steps
+								max: totalTime
+							}
+						}],
+						yAxes: [{
+							title: {
+								display: true,
+								text: 'Number of Servers Penetrated'  // Label the y-axis
+							},
+							type: 'linear',
+							beginAtZero: true,
+							stepSize: 1,
+							max: totalServers,  // Y-axis should not exceed the total number of 	servers
+							ticks: {
+								autoSkip: false,  // Prevent skipping of labels
+								max: totalTime
+							}
+						}]
+					},
+					maintainAspectRatio: false           // Disable aspect ratio locking for custom 	canvas size
+				}
+			};
+		
+			// Initialize the chart by creating a new Chart instance and passing in the config
+			chartInstance = new Chart(ctx, config);
+		};
+
+		function generateSecondChart(totalServers, attackersData) {
+			let chartSecondInstance = null;
+		
+			if (chartSecondInstance) {
+				chartSecondInstance.destroy(); // Cancel previous chart if any exist
+			}
+		
+			// Adjust the parent element's height and width for the chart canvas
+			secondChart.parentNode.style.height = '400px';
+			secondChart.parentNode.style.width = '800px';
+		
+			// Initialize an array to store how many attackers penetrated each number of servers
+			const penetrationCounts = Array(totalServers + 1).fill(0); // Create an array with length totalServers + 1, filled with 0
+			
+			// Loop through each attacker's data to count how many servers they penetrated
+			attackersData.forEach((attacker) => {
+				const finalPenetrations = attacker.data[attacker.data.length - 1].y; // Get the final number of penetrated servers for each attacker
+				penetrationCounts[finalPenetrations]++; // Increment the count for the respective number of servers
+			});
+			
+			console.log('data',attackersData);
+
+			// Configure the second chart
+			const ctxSecond = document.getElementById('secondChart').getContext('2d');
+			const config = {
+				type: 'line',
+				data: {
+					datasets: [{
+						label: 'Number of Attackers vs. Servers Penetrated',
+						borderColor: 'rgba(75, 192, 192, 1)', // Set line color
+						borderWidth: 2,
+						radius: 4,
+						pointBackgroundColor: 'rgba(75, 192, 192, 1)',
+						fill: false,
+						data: attackersData, // The data showing the number of attackers vs. number of servers hacked
+					}]
+				},
+				options: {
+					interaction: {
+						intersect: false // Ensure that interactions don't highlight intersections between datasets
+					},
+					plugins: {
+						legend: false // Disable the legend
+					},
+					scales: {
+						xAxes: [{
+							title: {
+								display: true,
+								text: 'Number of Servers Penetrated'
+							},
+							type: 'linear',
+							beginAtZero: true,
+							max: totalServers, // X-axis goes up to the total number of servers
+							ticks: {
+								stepSize: 1, // Increment by 1 for each server hacked
+								autoSkip: false
+							}
+						}],
+						yAxes: [{
+							title: {
+								display: true,
+								text: 'Number of Attackers'
+							},
+							beginAtZero: true,
+							max: attackersData.length, // Y-axis should go up to the number of attackers
+							ticks: {
+								stepSize: 1,
+								autoSkip: false
+							}
+						}]
+					},
+					maintainAspectRatio: false
+				}
+			};
+			// Create the second chart
+			chartSecondInstance = new Chart(ctxSecond, config);
+		}
+
+		// Function to handle the form submission
+		document.querySelector('form').addEventListener('submit', function(event) {
+			// Prevent the default form submission
+			event.preventDefault();
+			// Get the values of n (total servers) and p (penetration probability) from the input fields
+			const n = parseInt(document.getElementById('n_Value').value);
+			const p = parseFloat(document.getElementById('p_Value').value);
+			const m = parseInt(document.getElementById('m_Value').value);
+
+			// Generate an array of probabilities for each attacker
+			const probabilities = Array(m).fill(p);
+
+			ctx.getContext('2d').clearRect(0, 0, ctx.width, ctx.height);  // Clear the canvas
+			generateChart(n, probabilities);  // Generate the chart with the new parameters
+			ctxSecond.getContext('2d').clearRect(0, 0, ctxSecond.width, ctxSecond.height);
+			generateSecondChart(n, globalData);
+		});
+		
+	</script>
+
+	
+	<p>The main part of the program is as follows:</p>
+	<img src="assets/hmwrk1/First.png" alt="" width="962" height="234">
+	<p>The code snippet initializes a global variable chartInstance to null, indicating that no chart exists when the script is first loaded. This variable is intended to store a reference to the Chart.js object, enabling manipulation, such as destruction, when creating a new chart. Additionally, it defines a function named getRandomColor() that generates a random color in hexadecimal format. This function works by starting with an empty string that begins with #, representing a hex color code. It loops six times, each time appending a random character from the hexadecimal character set 0123456789ABCDEF to the string. Each character is selected by generating a random number between 0 and 15 and using this number to index into the letters string. The result is a complete hex color string, such as #A1B2C3, which can be used to color various elements in the chart, ensuring that each line has a unique and random color.</p>
+	<p>This is second part:</p>
+	<img src="assets/hmwrk1/Second.png" alt="" width="962" height="766">
+	<p>The generateChart function creates a chart that visualizes the penetration process of multiple attackers over time. It begins by checking if a previous chart instance exists and destroys it to clear the canvas for a new chart. The dimensions of the chart are set, providing a specified height and width. The function initializes a container to hold the datasets for each attacker, then iterates through an array of penetration probabilities for each attacker. For each attacker, it creates a data array that simulates the number of penetrated servers over a series of time steps. During this simulation, a random value is generated, and if it falls below the attacker's probability, the count of penetrated servers is incremented. The resulting data is then added to the datasets array, complete with a unique color and label for each attacker, preparing the information for display in the chart.</p>
+
+</body>
+</html>
