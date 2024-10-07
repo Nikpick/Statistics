@@ -47,7 +47,7 @@
 	<p>Numerical methods are developed to minimize these errors. Donald Knuth, a pioneer in computer science, contributed extensively to addressing computational problems like these. His work in numerical analysis emphasizes careful algorithm design to reduce the effects of rounding and catastrophic cancellation. Some solutions include rearranging arithmetic operations to avoid subtracting similar numbers or using higher-precision formats when necessary.</p>
 	<h2>Servers-Hackers Model</h2>
 	<p>We are simulating a scenario with <b><i>n</i></b> servers and <b><i>m</i></b> attackers, where each hacker has a probability <b><i>p</i></b> of successfully penetrating any given server. The goal is to visually represent this process: if a hacker fails to penetrate a server, the line remains flat, while a successful breach will cause a jump to 1 on the graph. By experimenting with different values of <b><i>n</i></b>, <b><i>m</i></b> and <b><i>p</i></b> we can observe how often the hacker reaches different levels of penetration over time. </p>
-	<p>Click on "Simulate" after having filled the necessary fields.</p>
+	<p>Click on "<b><i>Simulate</i></b>" after having filled the necessary fields.</p>
 	<div class="canvas-container">
 		<canvas id="myChart" width="100" height="100"></canvas>
 		<canvas id="secondChart" width="100" height="100"></canvas>
@@ -76,6 +76,11 @@
 		let chartInstance = null;
 		let chartSecondInstance = null;
 		let globalData = [];
+
+		const defaultN = 10;  // Default number of servers
+		const defaultM = 5;   // Default number of attackers
+		const defaultP = 0.5; // Default probability
+
 		// Function to generate random colors for the lines
 		function getRandomColor() {
 			const letters = '0123456789ABCDEF';
@@ -285,6 +290,24 @@
 			ctxSecond.getContext('2d').clearRect(0, 0, ctxSecond.width, ctxSecond.height);
 			generateSecondChart(n, globalData);
 		});
+
+		window.onload = function() {
+			// Set default values for inputs
+			document.getElementById('n_Value').value = defaultN;
+			document.getElementById('m_Value').value = defaultM;
+			document.getElementById('p_Value').value = defaultP;
+		
+			// Generate the charts using the default values
+			const probabilities = Array(defaultM).fill(defaultP);
+		
+			// Clear previous content
+			ctx.getContext('2d').clearRect(0, 0, ctx.width, ctx.height);  
+			generateChart(defaultN, probabilities);
+		
+			// Clear second chart and generate
+			ctxSecond.getContext('2d').clearRect(0, 0, ctxSecond.width, ctxSecond.height);
+			generateSecondChart(defaultN, globalData);
+		};
 		
 	</script>
 
