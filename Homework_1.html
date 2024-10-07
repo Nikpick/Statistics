@@ -48,12 +48,13 @@
 	<h2>Servers-Hackers Model</h2>
 	<p>We are simulating a scenario with <b><i>n</i></b> servers and <b><i>m</i></b> attackers, where each hacker has a probability <b><i>p</i></b> of successfully penetrating any given server. The goal is to visually represent this process: if a hacker fails to penetrate a server, the line remains flat, while a successful breach will cause a jump to 1 on the graph. By experimenting with different values of <b><i>n</i></b>, <b><i>m</i></b> and <b><i>p</i></b> we can observe how often the hacker reaches different levels of penetration over time. </p>
 	<p>Click on "Simulate" after having filled the necessary fields.</p>
-	<div>
+	<div class="canvas-container">
 		<canvas id="myChart" width="100" height="100"></canvas>
+		<canvas id="secondChart" width="100" height="100"></canvas>
 	</div>
-    
+	
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.js"></script>
-    
+	
 
 	<form action="">
 		<label for="n_Value">N (Servers)</label>
@@ -68,10 +69,13 @@
 	<script>
 		// Reference the canvas element where the chart will be drawn
 		const ctx = document.getElementById('myChart');
+		const ctxSecond = document.getElementById('secondChart');
 	</script>
 
-    <script>
+	<script>
 		let chartInstance = null;
+		let chartSecondInstance = null;
+		let globalData = [];
 		// Function to generate random colors for the lines
 		function getRandomColor() {
 			const letters = '0123456789ABCDEF';
@@ -85,8 +89,8 @@
 		function generateChart(totalServers, probabilities) {
 
 			if (chartInstance) {
-                chartInstance.destroy(); // Cancel previous chart if any exist
-            }
+				chartInstance.destroy(); // Cancel previous chart if any exist
+			}
 			// Adjust the parent element's height and width for the chart canvas
 			myChart.parentNode.style.height = '400px';
 			myChart.parentNode.style.width = '800px';
@@ -108,6 +112,11 @@
 					}
 					data.push({ x: t, y: penetratedServers });
 				}
+
+				globalData.push({
+					label: `Attacker ${index + 1}`,
+					data: data
+				});
 
 				// Add the data to the datasets array with unique color and label
 				datasets.push({
@@ -171,24 +180,114 @@
 			chartInstance = new Chart(ctx, config);
 		};
 
+		function generateSecondChart(totalServers, attackersData) {
+
+			if (chartSecondInstance) {
+				chartSecondInstance.destroy(); // Cancel previous chart if any exist
+			}
+		
+			// Adjust the parent element's height and width for the chart canvas
+			secondChart.parentNode.style.height = '400px';
+			secondChart.parentNode.style.width = '800px';
+		
+			// Initialize an array to store how many attackers penetrated each number of servers
+			// Create an array with length totalServers + 1, filled with 0
+			const penetrationCounts = Array(totalServers + 1).fill(0); 
+		
+			// Loop through each attacker's data to count how many servers they penetrated
+			attackersData.forEach((attacker) => {
+				// Get the final number of penetrated servers for each attacker
+				const finalPenetrations = attacker.data[attacker.data.length - 1].y; 
+				// Increment the count for the respective number of servers
+				penetrationCounts[finalPenetrations]++; 
+			});
+		
+			// Prepare the data for the chart in the format [{x: serversPenetrated, y: attackersCount}]
+			const chartData = penetrationCounts.map((count, serversPenetrated) => {
+				return { x: serversPenetrated, y: count };
+			});
+		
+			// Configure the second chart
+			const ctxSecond = document.getElementById('secondChart').getContext('2d');
+			const config = {
+				type: 'line',  // You can use 'bar' or 'line' depending on your preference for distribution visualization
+				data: {
+					datasets: [{
+						label: 'Number of Attackers vs. Servers Penetrated',
+						borderColor: 'rgba(75, 192, 192, 1)', // Set line color
+						borderWidth: 2,
+						radius: 4,
+						pointBackgroundColor: 'rgba(75, 192, 192, 1)',
+						fill: false,
+						data: chartData, // The data showing the number of attackers vs. number of servers hacked
+					}]
+				},
+				options: {
+					interaction: {
+						intersect: false // Ensure that interactions don't highlight intersections between datasets
+					},
+					plugins: {
+						legend: false // Disable the legend
+					},
+					scales: {
+						xAxes: [{
+							title: {
+								display: true,
+								text: 'Number of Servers Penetrated'
+							},
+							type: 'linear',
+							beginAtZero: true,
+							max: totalServers, // X-axis goes up to the total number of servers
+							ticks: {
+								stepSize: 1, // Increment by 1 for each server hacked
+								autoSkip: false
+							}
+						}],
+						yAxes: [{
+							title: {
+								display: true,
+								text: 'Number of Attackers'
+							},
+							beginAtZero: true,
+							max: attackersData.length, // Y-axis should go up to the number of attackers
+							ticks: {
+								stepSize: 1,
+								autoSkip: false
+							}
+						}]
+					},
+					maintainAspectRatio: false
+				}
+			};
+		
+			// Create the second chart
+			chartSecondInstance = new Chart(ctxSecond, config);
+		}
+
 		// Function to handle the form submission
-        document.querySelector('form').addEventListener('submit', function(event) {
+		document.querySelector('form').addEventListener('submit', function(event) {
 			// Prevent the default form submission
 			event.preventDefault();
-            // Get the values of n (total servers) and p (penetration probability) from the input fields
-            const n = parseInt(document.getElementById('n_Value').value);
-            const p = parseFloat(document.getElementById('p_Value').value);
+
+			// Reset charts and globalData before new simulation
+			globalData = [];
+
+			// Get the values of n (total servers) and p (penetration probability) from the input fields
+			const n = parseInt(document.getElementById('n_Value').value);
+			const p = parseFloat(document.getElementById('p_Value').value);
 			const m = parseInt(document.getElementById('m_Value').value);
 
 			// Generate an array of probabilities for each attacker
-            const probabilities = Array(m).fill(p);
-			console.log("Probabilities Array:", probabilities);
+			const probabilities = Array(m).fill(p);
 
 			ctx.getContext('2d').clearRect(0, 0, ctx.width, ctx.height);  // Clear the canvas
 			generateChart(n, probabilities);  // Generate the chart with the new parameters
-        });
+			ctxSecond.getContext('2d').clearRect(0, 0, ctxSecond.width, ctxSecond.height);
+			generateSecondChart(n, globalData);
+		});
 		
 	</script>
+
 	
 	<p>The main part of the program is as follows:</p>
 	<img src="assets/hmwrk1/First.png" alt="" width="962" height="234">
@@ -196,6 +295,7 @@
 	<p>This is second part:</p>
 	<img src="assets/hmwrk1/Second.png" alt="" width="962" height="766">
 	<p>The generateChart function creates a chart that visualizes the penetration process of multiple attackers over time. It begins by checking if a previous chart instance exists and destroys it to clear the canvas for a new chart. The dimensions of the chart are set, providing a specified height and width. The function initializes a container to hold the datasets for each attacker, then iterates through an array of penetration probabilities for each attacker. For each attacker, it creates a data array that simulates the number of penetrated servers over a series of time steps. During this simulation, a random value is generated, and if it falls below the attacker's probability, the count of penetrated servers is incremented. The resulting data is then added to the datasets array, complete with a unique color and label for each attacker, preparing the information for display in the chart.</p>
-
+	<img src="assets/hmwrk1/Third.png" alt="" width="883" height="506">
+	<p>The function generateSecondChart is responsible for creating and displaying a chart that visualizes how many servers were penetrated by attackers in a simulation. First, if a previous chart exists, it is destroyed to ensure no old data is displayed. Then, the function adjusts the dimensions of the parent element containing the chart canvas to give it an appropriate size. Next, the function initializes an array called penetrationCounts with a length of totalServers + 1, and all values set to zero. This array will track how many attackers managed to penetrate each possible number of servers. The function then loops through each attacker's data, specifically looking at the final number of servers penetrated by each attacker. For each attacker, the corresponding position in the penetrationCounts array is incremented, tallying the number of attackers that penetrated a certain number of servers. Finally, it prepares the data for the chart by mapping the penetrationCounts into an array of objects, where each object represents the number of servers penetrated (the x value) and how many attackers achieved that number (the y value). This structured data is ready to be used for creating a chart.</p>
 </body>
 </html>
