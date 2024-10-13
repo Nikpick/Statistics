@@ -1,0 +1,542 @@
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Homework #2</title>
+	<link rel="stylesheet" href="css/styles.css">
+	<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+</head>
+<body>
+	<a href="index.html">Home</a>
+	<h1>Statistics - Homework #2 [Y.2024-2025]</h1>
+	<h2>Welford's Algorithm</h2>
+	<p>Welford's algorithm is used for computing the running variance and mean with a focus on its numerical properties.</p>
+
+	<p>&nbsp;</p>
+
+	<p>The formula for updating the mean is given by:</p>
+	<p>
+		\[
+		m_t = m_{t-1} + \frac{x_t - m_{t-1}}{t}
+		\]
+	</p>
+	<p>where \(m_{t-1}\) is the mean calculated from the previous \(t-1\) data points, when a new data point, \(x_t\), arrives at time \(t\).</p>
+
+	<p>&nbsp;</p>
+	
+	<p>The formula for updating the variance is:</p>
+	<p>
+		\[
+		s_t^2 = s_{t-1}^2 + (x_t - m_{t-1})(x_t - m_t)
+		\]
+	</p>
+	<p>where \(s_{t-1}^2\) is the variance from the previous data points.</p>
+
+	<p>&nbsp;</p>
+	
+	<p>The unbiased sample variance is:</p>
+	<p>
+		\[
+		\hat{\sigma}^2 = \frac{s_t^2}{t-1}
+		\]
+	</p>
+
+	<h2>Visual representation</h2>
+
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.js"></script>
+
+	
+	<div>
+		<canvas id="firstChart" width="100" height="100"></canvas>
+	</div>
+
+	<button onclick="addData()">Add Data Point</button>
+	<button onclick="restartData()">Restart Representation</button>
+	
+
+	<script>
+		let dataPoints = [];
+		let means = [];
+		let variances = [];
+		let mean = 0, M2 = 0, variance = 0;
+		let count = 0;
+
+		const ctx = document.getElementById('firstChart').getContext('2d');
+
+		firstChart.parentNode.style.height = '400px';
+		firstChart.parentNode.style.width = '800px';
+
+		const chart = new Chart(ctx, {
+			type: 'line',
+			data: {
+				labels: [],
+				datasets: [
+					{ label: 'Mean', data: means, borderColor: 'blue', fill: false },
+					{ label: 'Variance', data: variances, borderColor: 'red', fill: false }
+				]
+			},
+			options: {
+				scales: {
+					y: { beginAtZero: true }
+				},
+				maintainAspectRatio: false
+			}
+		});
+		function restartData() {
+			// Reset variables
+			dataPoints = [];
+			means = [];
+			variances = [];
+			mean = 0;
+			M2 = 0;
+			variance = 0;
+			count = 0;
+	
+			// Clear chart data
+			chart.data.labels = [];
+			chart.data.datasets[0].data = []; // Reset mean dataset
+			chart.data.datasets[1].data = []; // Reset variance dataset
+			chart.update();
+		}
+	
+		function addData() {
+			// Generate random data point
+			const x = Math.random() * 10;
+			count++;
+			const delta = x - mean;
+			mean += delta / count;
+			const delta2 = x - mean;
+			M2 += delta * delta2;
+			variance = count < 2 ? 0 : M2 / (count - 1);
+	
+			// Update data arrays
+			dataPoints.push(x);
+			means.push(mean);
+			variances.push(variance);
+	
+			// Update chart
+			chart.data.labels.push(count.toString());
+			chart.data.datasets[0].data = means; // Update mean dataset
+			chart.data.datasets[1].data = variances; // Update variance dataset
+			chart.update();
+		}
+	</script>
+
+	<p>&nbsp;</p> 
+
+	<h2>Refined Euler-Maruyama simulator</h2>
+
+	<h3>Absolute Frequency Trajectory</h3>
+	<p>The absolute frequency describes the number of times a particular value has been observed.</p>
+	
+	<h3>Relative Frequency Trajectory</h3>
+	<p>The relative frequency describes the number of times a particular value has been observed in relation to the total number of values (usually as a %).</p>
+
+	<p>What follows is built upon <a href="Homework_1.html">Homework #1</a> results, with the addition of the absolute and relative frequencies. Moreover, a random walk has been implemented, this results in (sometimes) negative results as seen below in the chart. As seen in the aforementioned Homework a distribution of the result will be presented and if desired one can input a specific time frame to check on the distribution on that particular interval.</p>
+
+	<div>
+		<canvas id="secondChart" width="100" height="100"></canvas>
+	</div>
+
+	<form action="">
+		<label for="n_Value">N (Servers)</label>
+		<input id="n_Value" type="number" value="10" min="1" max="100" name="n Value" required>
+		<label for="m_Value">M (Hackers)</label>
+		<input id="m_Value" type="number" value="5" min="1" max="100" name="m Value"  required placeholder="Insert M value (Hackers)">
+		<label for="p_Value">P (Probability)</label>
+		<input id="p_Value" type="number" value="0.5" min="0.01" max="1.00" name="p Value" required step="0.01" placeholder="Insert P value (Probability)">
+		<label for="t_Value">T (Time)</label>
+		<input id="t_Value" type="number" value="10" min="1" max="100" name="t Value" required>
+		<input type="submit" value="Simulate">
+	</form>
+
+	<div>
+		<canvas id="thirdChart" width="100" height="100"></canvas>
+	</div>
+	<div>
+		<canvas id="fourthChart" width="100" height="100"></canvas>
+	</div>
+
+	<script>
+		// Reference the canvas element where the chart will be drawn
+		const ctxSecond = document.getElementById('secondChart');
+		const ctxThird = document.getElementById('thirdChart');
+		const ctxFourth = document.getElementById('fourthChart');
+	</script>
+
+	<script>
+		let chartSecondInstance = null;
+		let chartThirdInstance = null;
+		let chartFourthInstance = null;
+		let globalData = [];
+		let halfGlobalData = [];
+
+		const defaultN = 10;  // Default number of servers
+		const defaultM = 5;   // Default number of attackers
+		const defaultP = 0.5; // Default probability
+		const defaultT = 5;   // Default time frame
+
+		// Function to generate random colors for the lines
+		function getRandomColor() {
+			const letters = '0123456789ABCDEF';
+			let color = '#';
+			for (let i = 0; i < 6; i++) {
+				color += letters[Math.floor(Math.random() * 16)];
+			}
+			return color;
+		}
+
+		function generateSecondChart(totalServers, probabilities, timeFrame) {
+
+			if (chartSecondInstance) {
+				chartSecondInstance.destroy(); // Cancel previous chart if any exist
+			}
+			
+			secondChart.parentNode.style.height = '400px';
+			secondChart.parentNode.style.width = '800px';
+
+			// Initialize datasets and tracking arrays
+			const datasets = [];
+			const totalTime = totalServers;
+					
+			// Initialize counters 
+			let totalAttacks = [];
+			let successfulAttacks = [];
+			let relativeFreq = [];
+					
+			// Loop through each attacker
+			probabilities.forEach((p, index) => {
+				const data = [];
+				const halfData = [];
+				let penetratedServers = 0; // Attacker-specific successful attacks
+			
+				// Simulate the penetration process
+				for (let t = 0; t <= totalServers; t++) {
+					const randomValue = Math.random();
+					const secondRandomValue = Math.random(); 
+
+					if (!totalAttacks[t]) totalAttacks[t] = 0;  // Initialize attack counters
+					if (!successfulAttacks[t]) successfulAttacks[t] = 0;
+					if (!relativeFreq[t]) relativeFreq[t] = 0;
+
+					totalAttacks[t]++;  // Increment total attempts at time t
+					
+					if (randomValue <= p) {
+						penetratedServers++;
+						successfulAttacks[t]++;  // Increment successful attacks
+					}
+
+					if (secondRandomValue > 0.5) { // Do a random walk
+						penetratedServers++;
+						successfulAttacks[t]++;
+					} else {
+						penetratedServers--;
+					}
+
+					relativeFreq[t] = (successfulAttacks[t] / totalAttacks[t]);
+
+					// Add data for individual attacker
+					data.push({ x: t, y: penetratedServers });
+
+					if (t <= timeFrame) {
+						halfData.push({ x: t, y: penetratedServers });		
+					}
+				}
+			
+				globalData.push({
+					label: `Attacker ${index + 1}`,
+					data: data
+				});
+
+				halfGlobalData.push({
+					label: `Attacker ${index + 1}`,
+					data: halfData
+				});
+
+				// Push individual attacker dataset
+				datasets.push({
+					label: `Attacker ${index + 1}`,
+					borderColor: getRandomColor(),
+					borderWidth: 1,
+					radius: 1,
+					data: data,
+					hidden: false
+				});
+			});
+			
+			// Push total attempts dataset (absolute frequency)
+			datasets.push({
+				label: 'Successful Attacks (Relative)',
+				borderColor: 'rgb(255, 0, 255)',
+				borderWidth: 5,
+				radius: 3,
+				data: relativeFreq.map((y, x) => ({ x, y })),
+				showInLegend: true
+			});
+			
+			// Push successful attacks dataset (relative frequency)
+			datasets.push({
+				label: 'Successful Attacks (Absolute)',
+				borderColor: 'rgb(0, 255, 0)',
+				borderWidth: 5,
+				radius: 3,
+				data: successfulAttacks.map((y, x) => ({ x, y })),
+				showInLegend: true
+			});
+			
+			// Chart configuration
+			const ctxSecond = document.getElementById('secondChart').getContext('2d');
+			const config = {
+				type: 'line',
+				data: { datasets },
+				options: {
+					interaction: { intersect: false },
+					legend: {
+						display: true, // Display legend
+						labels: {
+							// Only show labels for specific datasets
+							filter: function(item) {
+								return item.text === 'Successful Attacks (Relative)' || item.text === 'Successful Attacks (Absolute)';
+							} 
+						}
+					},
+					scales: {
+						xAxes: [{
+							title: { display: true, text: 'Time (Attempts)' },
+							type: 'linear', beginAtZero: true, max: totalTime,
+							ticks: { autoSkip: false, stepSize: 2, max: totalTime }
+						}],
+						yAxes: [{
+							title: { display: true, text: 'Number of Servers Penetrated' },
+							type: 'linear', beginAtZero: true, stepSize: 1, suggestedMax: Math.max(successfulAttacks),
+							ticks: { autoSkip: false }
+						}]
+					},
+					maintainAspectRatio: false
+				}
+			};
+			
+			// Create the chart
+			chartSecondInstance = new Chart(ctxSecond, config);
+		}
+
+		function generateThirdChart(totalServers, attackersData) {
+
+			if (chartThirdInstance) {
+				chartThirdInstance.destroy(); // Cancel previous chart if any exist
+			}
+
+			// Adjust the parent element's height and width for the chart canvas
+			thirdChart.parentNode.style.height = '400px';
+			thirdChart.parentNode.style.width = '800px';
+
+			// Initialize an array to store how many attackers penetrated each number of servers
+			// Create an array with length totalServers + 1, filled with 0
+			const penetrationCounts = Array(totalServers + 1).fill(0); 
+		
+			// Loop through each attacker's data to count how many servers they penetrated
+			attackersData.forEach((attacker) => {
+				// Get the final number of penetrated servers for each attacker
+				const finalPenetrations = attacker.data[attacker.data.length - 1].y; 
+				// Increment the count for the respective number of servers
+				penetrationCounts[finalPenetrations]++; 
+			});
+
+			// Prepare the data for the chart in the format [{x: serversPenetrated, y: attackersCount}]
+			const chartThirdData = penetrationCounts.map((count, serversPenetrated) => {
+				return { x: serversPenetrated, y: count };
+			});
+
+			// Configure the second chart
+			const ctxThird = document.getElementById('thirdChart').getContext('2d');
+			const config = {
+				type: 'line',  // You can use 'bar' or 'line' depending on your preference for distribution visualization
+				data: {
+					datasets: [{
+						label: 'Number of Attackers vs. Servers Penetrated',
+						borderColor: 'rgba(75, 192, 192, 1)', // Set line color
+						borderWidth: 2,
+						radius: 4,
+						pointBackgroundColor: 'rgba(75, 192, 192, 1)',
+						fill: false,
+						data: chartThirdData, // The data showing the number of attackers vs. number of servers hacked
+					}]
+				},
+				options: {
+					interaction: {
+						intersect: false // Ensure that interactions don't highlight intersections between datasets
+					},
+					plugins: {
+						legend: false // Disable the legend
+					},
+					scales: {
+						xAxes: [{
+							title: {
+								display: true,
+								text: 'Number of Servers Penetrated'
+							},
+							type: 'linear',
+							beginAtZero: true,
+							max: totalServers, // X-axis goes up to the total number of servers
+							ticks: {
+								stepSize: 1, // Increment by 1 for each server hacked
+								autoSkip: false
+							}
+						}],
+						yAxes: [{
+							title: {
+								display: true,
+								text: 'Number of Attackers'
+							},
+							beginAtZero: true,
+							max: attackersData.length, // Y-axis should go up to the number of attackers
+							ticks: {
+								stepSize: 1,
+								autoSkip: false
+							}
+						}]
+					},
+					maintainAspectRatio: false
+				}
+			};
+		
+			// Create the second chart
+			chartThirdInstance = new Chart(ctxThird, config);
+
+		}
+
+		function generateFourthChart(totalServers, attackersData) {
+
+			if (chartFourthInstance) {
+				chartFourthInstance.destroy(); // Cancel previous chart if any exist
+			}
+
+			// Adjust the parent element's height and width for the chart canvas
+			fourthChart.parentNode.style.height = '400px';
+			fourthChart.parentNode.style.width = '800px';
+
+			// Initialize an array to store how many attackers penetrated each number of servers
+			// Create an array with length totalServers + 1, filled with 0
+			const penetrationCounts = Array(totalServers + 1).fill(0); 
+		
+			// Loop through each attacker's data to count how many servers they penetrated
+			attackersData.forEach((attacker) => {
+				// Get the final number of penetrated servers for each attacker
+				const finalPenetrations = attacker.data[attacker.data.length - 1].y; 
+				// Increment the count for the respective number of servers
+				penetrationCounts[finalPenetrations]++; 
+			});
+
+			// Prepare the data for the chart in the format [{x: serversPenetrated, y: attackersCount}]
+			const chartFourthData = penetrationCounts.map((count, serversPenetrated) => {
+				return { x: serversPenetrated, y: count };
+			});
+
+			// Configure the second chart
+			const ctxFourth = document.getElementById('fourthChart').getContext('2d');
+			const config = {
+				type: 'line',  // You can use 'bar' or 'line' depending on your preference for distribution visualization
+				data: {
+					datasets: [{
+						label: 'Number of Attackers vs. Servers Penetrated',
+						borderColor: 'rgba(75, 192, 192, 1)', // Set line color
+						borderWidth: 2,
+						radius: 4,
+						pointBackgroundColor: 'rgba(75, 192, 192, 1)',
+						fill: false,
+						data: chartFourthData, // The data showing the number of attackers vs. number of servers hacked
+					}]
+				},
+				options: {
+					interaction: {
+						intersect: false // Ensure that interactions don't highlight intersections between datasets
+					},
+					plugins: {
+						legend: false // Disable the legend
+					},
+					scales: {
+						xAxes: [{
+							title: {
+								display: true,
+								text: 'Number of Servers Penetrated'
+							},
+							type: 'linear',
+							beginAtZero: true,
+							max: totalServers, // X-axis goes up to the total number of servers
+							ticks: {
+								stepSize: 1, // Increment by 1 for each server hacked
+								autoSkip: false
+							}
+						}],
+						yAxes: [{
+							title: {
+								display: true,
+								text: 'Number of Attackers'
+							},
+							beginAtZero: true,
+							max: attackersData.length, // Y-axis should go up to the number of attackers
+							ticks: {
+								stepSize: 1,
+								autoSkip: false
+							}
+						}]
+					},
+					maintainAspectRatio: false
+				}
+			};
+		
+			// Create the second chart
+			chartFourthInstance = new Chart(ctxFourth, config);
+
+		}
+
+		// Function to handle the form submission
+		document.querySelector('form').addEventListener('submit', function(event) {
+			// Prevent the default form submission
+			event.preventDefault();
+
+			// Reset charts and globalData before new simulation
+			globalData = [];
+			halfGlobalData = [];
+
+			// Get the values of n (total servers) and p (penetration probability) from the input fields
+			const n = parseInt(document.getElementById('n_Value').value);
+			const p = parseFloat(document.getElementById('p_Value').value);
+			const m = parseInt(document.getElementById('m_Value').value);
+			const t = parseInt(document.getElementById('t_Value').value);
+
+			// Generate an array of probabilities for each attacker
+			const probabilities = Array(m).fill(p);
+
+			ctxSecond.getContext('2d').clearRect(0, 0, ctxSecond.width, ctxSecond.height);  // Clear the canvas
+			generateSecondChart(n, probabilities, t);  // Generate the chart with the new parameters
+			ctxThird.getContext('2d').clearRect(0, 0, ctxThird.width, ctxThird.height);
+			generateThirdChart(n, halfGlobalData);
+			ctxFourth.getContext('2d').clearRect(0, 0, ctxFourth.width, ctxFourth.height);
+			generateFourthChart(n, globalData);
+		});
+
+		window.onload = function() {
+			// Set default values for inputs
+			document.getElementById('n_Value').value = defaultN;
+			document.getElementById('m_Value').value = defaultM;
+			document.getElementById('p_Value').value = defaultP;
+			document.getElementById('t_Value').value = defaultT;
+		
+			// Generate the charts using the default values
+			const probabilities = Array(defaultM).fill(defaultP);
+		
+			// Clear previous content
+			ctxSecond.getContext('2d').clearRect(0, 0, ctxSecond.width, ctxSecond.height);  
+			generateSecondChart(defaultN, probabilities, defaultT);
+			ctxThird.getContext('2d').clearRect(0, 0, ctxThird.width, ctxThird.height);
+			generateThirdChart(defaultN, halfGlobalData);
+			ctxFourth.getContext('2d').clearRect(0, 0, ctxFourth.width, ctxFourth.height);
+			generateFourthChart(defaultN, globalData);
+		};
+	</script>
+
+	<p>&nbsp;</p> 
+
+</body>
