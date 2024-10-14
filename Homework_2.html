@@ -65,7 +65,7 @@
 		const ctx = document.getElementById('firstChart').getContext('2d');
 
 		firstChart.parentNode.style.height = '400px';
-		firstChart.parentNode.style.width = '800px';
+		firstChart.parentNode.style.width = '770px';
 
 		const chart = new Chart(ctx, {
 			type: 'line',
@@ -139,6 +139,8 @@
 		<canvas id="secondChart" width="100" height="100"></canvas>
 	</div>
 
+	<p>&nbsp;</p> 
+
 	<form action="">
 		<label for="n_Value">N (Servers)</label>
 		<input id="n_Value" type="number" value="10" min="1" max="100" name="n Value" required>
@@ -150,13 +152,20 @@
 		<input id="t_Value" type="number" value="10" min="1" max="100" name="t Value" required>
 		<input type="submit" value="Simulate">
 	</form>
+	
+	<p>&nbsp;</p>
 
 	<div>
 		<canvas id="thirdChart" width="100" height="100"></canvas>
 	</div>
+
+	<p>&nbsp;</p> 
+
 	<div>
 		<canvas id="fourthChart" width="100" height="100"></canvas>
 	</div>
+
+	<p>&nbsp;</p> 
 
 	<script>
 		// Reference the canvas element where the chart will be drawn
@@ -164,6 +173,8 @@
 		const ctxThird = document.getElementById('thirdChart');
 		const ctxFourth = document.getElementById('fourthChart');
 	</script>
+
+	<p>&nbsp;</p>
 
 	<script>
 		let chartSecondInstance = null;
@@ -190,177 +201,232 @@
 		function generateSecondChart(totalServers, probabilities, timeFrame) {
 
 			if (chartSecondInstance) {
-				chartSecondInstance.destroy(); // Cancel previous chart if any exist
+				chartSecondInstance.destroy(); // If there's an existing chart instance, destroy it to avoid overlap.
 			}
-			
+		
+			// Adjust the size of the chart to fit its container.
 			secondChart.parentNode.style.height = '400px';
-			secondChart.parentNode.style.width = '800px';
-
-			// Initialize datasets and tracking arrays
+			secondChart.parentNode.style.width = '770px';
+		
+			// Initialize datasets and tracking arrays for the chart.
 			const datasets = [];
-			const totalTime = totalServers;
-					
-			// Initialize counters 
+			const totalTime = totalServers;  // Set total time steps equal to the total number of servers.
+		
+			// Arrays to track the total number of attacks, successful attacks, and relative frequency over time.
 			let totalAttacks = [];
 			let successfulAttacks = [];
 			let relativeFreq = [];
-					
-			// Loop through each attacker
+		
+			// Arrays and variables to compute and store mean and variance.
+			let means = [];
+			let variances = [];
+			let count = 0;
+			let mean = 0;
+			let M2 = 0;  // M2 is used in Welford's algorithm to compute variance.
+		
+			// Loop through each attacker in the simulation.
 			probabilities.forEach((p, index) => {
-				const data = [];
-				const halfData = [];
-				let penetratedServers = 0; // Attacker-specific successful attacks
-			
-				// Simulate the penetration process
+				const data = [];  // Array to hold attacker's data for the full simulation.
+				const halfData = [];  // Array to hold attacker's data up to the specified timeFrame.
+				let penetratedServers = 0;  // Track the number of servers penetrated by this attacker.
+		
+				// Simulate the penetration process for each time step (server).
 				for (let t = 0; t <= totalServers; t++) {
-					const randomValue = Math.random();
-					const secondRandomValue = Math.random(); 
-
-					if (!totalAttacks[t]) totalAttacks[t] = 0;  // Initialize attack counters
+					const randomValue = Math.random();  // Random value to determine success or failure.
+					const secondRandomValue = Math.random();  // Additional random value for random walk.
+		
+					// Initialize the counters if they haven't been set for this time step.
+					if (!totalAttacks[t]) totalAttacks[t] = 0;
 					if (!successfulAttacks[t]) successfulAttacks[t] = 0;
 					if (!relativeFreq[t]) relativeFreq[t] = 0;
-
-					totalAttacks[t]++;  // Increment total attempts at time t
-					
+		
+					// Count the total number of attacks at time t.
+					totalAttacks[t]++;
+		
+					// Check if the penetration is successful and update the count.
 					if (randomValue <= p) {
 						penetratedServers++;
-						successfulAttacks[t]++;  // Increment successful attacks
+						successfulAttacks[t]++;
 					}
-
-					if (secondRandomValue > 0.5) { // Do a random walk
+		
+					// Implement random walk: increase or decrease the number of penetrated servers.
+					if (secondRandomValue > 0.5) {
 						penetratedServers++;
 						successfulAttacks[t]++;
 					} else {
 						penetratedServers--;
 					}
-
+		
+					// Calculate the relative frequency of successful attacks.
 					relativeFreq[t] = (successfulAttacks[t] / totalAttacks[t]);
-
-					// Add data for individual attacker
+		
+					// Store the attacker's progress (penetrated servers) at time t.
 					data.push({ x: t, y: penetratedServers });
-
+		
+					// If within the time frame, also store the progress in the halfData array.
 					if (t <= timeFrame) {
-						halfData.push({ x: t, y: penetratedServers });		
+						halfData.push({ x: t, y: penetratedServers });
 					}
+		
+					// Welford's algorithm for computing running mean and variance.
+					count++;
+					const delta = successfulAttacks[t] - mean;
+					mean += delta / count;
+					const delta2 = successfulAttacks[t] - mean;
+					M2 += delta * delta2;
+					const variance = count < 2 ? 0 : M2 / (count - 1);  // Variance only valid after 2 points.
+		
+					// Store the running mean and variance at each time step.
+					means[t] = mean;
+					variances[t] = variance;
 				}
-			
+		
+				// Save the full dataset for this attacker for future reference.
 				globalData.push({
 					label: `Attacker ${index + 1}`,
 					data: data
 				});
-
+		
+				// Save the partial dataset (up to timeFrame) for this attacker.
 				halfGlobalData.push({
 					label: `Attacker ${index + 1}`,
 					data: halfData
 				});
-
-				// Push individual attacker dataset
+		
+				// Add the attacker's dataset to the chart.
 				datasets.push({
 					label: `Attacker ${index + 1}`,
-					borderColor: getRandomColor(),
+					borderColor: getRandomColor(),  // Assign a random color to this attacker's line.
 					borderWidth: 1,
 					radius: 1,
 					data: data,
-					hidden: false
+					hidden: false  // Ensure that the attacker's data is shown by default.
 				});
 			});
-			
-			// Push total attempts dataset (absolute frequency)
+		
+			// Add the dataset representing the relative frequency of successful attacks.
 			datasets.push({
 				label: 'Successful Attacks (Relative)',
-				borderColor: 'rgb(255, 0, 255)',
+				borderColor: 'rgb(255, 255, 0)',  // Yellow line for relative frequency.
 				borderWidth: 5,
-				radius: 3,
-				data: relativeFreq.map((y, x) => ({ x, y })),
+				radius: 4,
+				data: relativeFreq.map((y, x) => ({ x, y })),  // Map time step (x) to frequency (y).
 				showInLegend: true
 			});
-			
-			// Push successful attacks dataset (relative frequency)
+		
+			// Add the dataset representing the absolute number of successful attacks.
 			datasets.push({
 				label: 'Successful Attacks (Absolute)',
-				borderColor: 'rgb(0, 255, 0)',
+				borderColor: 'rgb(0, 255, 0)',  // Green line for absolute number of successful attacks.
 				borderWidth: 5,
-				radius: 3,
-				data: successfulAttacks.map((y, x) => ({ x, y })),
+				radius: 4,
+				data: successfulAttacks.map((y, x) => ({ x, y })),  // Map time step (x) to successes (y).
 				showInLegend: true
 			});
-			
-			// Chart configuration
+		
+			// Add the dataset representing the mean of successful attacks over time.
+			datasets.push({
+				label: 'Mean of Successful Attacks',
+				borderColor: 'rgb(0, 0, 255)',  // Blue line for the mean.
+				borderWidth: 5,
+				radius: 4,
+				data: means.map((y, x) => ({ x, y })),  // Map time step (x) to mean (y).
+				showInLegend: true
+			});
+		
+			// Add the dataset representing the variance of successful attacks over time.
+			datasets.push({
+				label: 'Variance of Successful Attacks',
+				borderColor: 'rgb(255, 0, 0)',  // Red line for variance.
+				borderWidth: 5,
+				radius: 4,
+				data: variances.map((y, x) => ({ x, y })),  // Map time step (x) to variance (y).
+				showInLegend: true
+			});
+		
+			// Configure and create the chart.
 			const ctxSecond = document.getElementById('secondChart').getContext('2d');
 			const config = {
-				type: 'line',
-				data: { datasets },
+				type: 'line',  // Line chart for visualization.
+				data: { datasets },  // Data contains all the datasets created above.
 				options: {
-					interaction: { intersect: false },
+					interaction: { intersect: false },  // Avoid highlighting intersections between lines.
 					legend: {
-						display: true, // Display legend
+						display: true,  // Display the legend with dataset labels.
 						labels: {
-							// Only show labels for specific datasets
+							// Filter the datasets that should appear in the legend.
 							filter: function(item) {
-								return item.text === 'Successful Attacks (Relative)' || item.text === 'Successful Attacks (Absolute)';
-							} 
+								return item.text === 'Successful Attacks (Relative)' || item.text === 'Successful Attacks (Absolute)' || item.text === 'Mean of Successful Attacks' || item.text === 'Variance of Successful Attacks';
+							}
 						}
 					},
 					scales: {
+						// Configure the x-axis.
 						xAxes: [{
-							title: { display: true, text: 'Time (Attempts)' },
-							type: 'linear', beginAtZero: true, max: totalTime,
-							ticks: { autoSkip: false, stepSize: 2, max: totalTime }
+							scaleLabel: { display: true, labelString: 'Time (Attempts)' },  // Label for x-axis.
+							type: 'linear', beginAtZero: true, max: totalTime,  // X-axis limits.
+							ticks: { autoSkip: false, stepSize: 2, max: totalTime }  // Tick marks on x-axis.
 						}],
+						// Configure the y-axis.
 						yAxes: [{
-							title: { display: true, text: 'Number of Servers Penetrated' },
-							type: 'linear', beginAtZero: true, stepSize: 1, suggestedMax: Math.max(successfulAttacks),
+							scaleLabel: { display: true, labelString: 'Number of Servers Penetrated' },  // Label for y-axis.
+							type: 'linear', beginAtZero: true, stepSize: 1,  // Y-axis starts at zero and increases by 1.
+							suggestedMax: Math.max(successfulAttacks),  // Suggested max based on the highest number of successful attacks.
 							ticks: { autoSkip: false }
 						}]
 					},
-					maintainAspectRatio: false
+					maintainAspectRatio: false  // Allow the chart to adjust its size dynamically.
 				}
 			};
-			
-			// Create the chart
+		
+			// Create the chart instance.
 			chartSecondInstance = new Chart(ctxSecond, config);
 		}
 
 		function generateThirdChart(totalServers, attackersData) {
 
 			if (chartThirdInstance) {
-				chartThirdInstance.destroy(); // Cancel previous chart if any exist
+				chartThirdInstance.destroy(); // Cancel previous chart if any exist to prevent overlap
 			}
-
-			// Adjust the parent element's height and width for the chart canvas
-			thirdChart.parentNode.style.height = '400px';
-			thirdChart.parentNode.style.width = '800px';
-
-			// Initialize an array to store how many attackers penetrated each number of servers
-			// Create an array with length totalServers + 1, filled with 0
-			const penetrationCounts = Array(totalServers + 1).fill(0); 
 		
-			// Loop through each attacker's data to count how many servers they penetrated
+			thirdChart.parentNode.style.height = '400px';  // Set the height of the chart container
+			thirdChart.parentNode.style.width = '770px';   // Set the width of the chart container
+		
+			// Initialize an array to store how many attackers penetrated each number of servers, including negative values
+			const minPenetrations = Math.min(...attackersData.map(attacker => attacker.data[attacker.data.length - 1].y));
+			// Find the minimum number of penetrations (to handle negative penetrations)
+			const maxPenetrations = Math.max(...attackersData.map(attacker => attacker.data[attacker.data.length - 1].y));
+			// Find the maximum number of penetrations
+		
+			// Adjust array size to handle both negative and positive values
+			// The array size is (maxPenetrations - minPenetrations + 1), to fit all possible penetration values.
+			const penetrationCounts = Array(maxPenetrations - minPenetrations + 1).fill(0);
+		
+			// Loop through each attacker and count how many servers they penetrated
 			attackersData.forEach((attacker) => {
-				// Get the final number of penetrated servers for each attacker
-				const finalPenetrations = attacker.data[attacker.data.length - 1].y; 
-				// Increment the count for the respective number of servers
-				penetrationCounts[finalPenetrations]++; 
+				const finalPenetrations = attacker.data[attacker.data.length - 1].y; // Get the final penetration count of each attacker
+				penetrationCounts[finalPenetrations - minPenetrations]++; // Shift index by the minimum penetration value to handle negatives
 			});
-
-			// Prepare the data for the chart in the format [{x: serversPenetrated, y: attackersCount}]
-			const chartThirdData = penetrationCounts.map((count, serversPenetrated) => {
-				return { x: serversPenetrated, y: count };
+		
+			// Map the counts to the appropriate x and y coordinates for Chart.js
+			const chartThirdData = penetrationCounts.map((count, index) => {
+				return { x: index + minPenetrations, y: count }; // Shift the index back to real penetration values
 			});
-
-			// Configure the second chart
+		
 			const ctxThird = document.getElementById('thirdChart').getContext('2d');
+			// Get the 2D rendering context for the third chart
+		
 			const config = {
-				type: 'line',  // You can use 'bar' or 'line' depending on your preference for distribution visualization
+				type: 'line', // Define the chart type as a line chart
 				data: {
 					datasets: [{
-						label: 'Number of Attackers vs. Servers Penetrated',
-						borderColor: 'rgba(75, 192, 192, 1)', // Set line color
-						borderWidth: 2,
-						radius: 4,
-						pointBackgroundColor: 'rgba(75, 192, 192, 1)',
-						fill: false,
-						data: chartThirdData, // The data showing the number of attackers vs. number of servers hacked
+						label: 'Servers Penetrated vs. Number of Attackers',
+						borderColor: 'rgba(75, 192, 192, 1)', // Color for the line
+						borderWidth: 2,  // Width of the line
+						radius: 4,  // Radius of the points on the line
+						pointBackgroundColor: 'rgba(75, 192, 192, 1)', // Color for the points
+						fill: false, // Do not fill under the line
+						data: chartThirdData, // Data to plot on the chart
 					}]
 				},
 				options: {
@@ -368,127 +434,124 @@
 						intersect: false // Ensure that interactions don't highlight intersections between datasets
 					},
 					plugins: {
-						legend: false // Disable the legend
+						legend: false // Disable the legend for the chart
 					},
 					scales: {
 						xAxes: [{
-							title: {
+							scaleLabel: {
 								display: true,
-								text: 'Number of Servers Penetrated'
+								labelString: 'Number of Servers Penetrated'  // X-axis label
 							},
 							type: 'linear',
-							beginAtZero: true,
-							max: totalServers, // X-axis goes up to the total number of servers
 							ticks: {
-								stepSize: 1, // Increment by 1 for each server hacked
-								autoSkip: false
+								stepSize: 1, // X-axis tick increments by 1 for each server hacked
+								autoSkip: false // Do not skip any labels
 							}
 						}],
 						yAxes: [{
-							title: {
+							scaleLabel: {
 								display: true,
-								text: 'Number of Attackers'
+								labelString: 'Number of Attackers' // Y-axis label
 							},
-							beginAtZero: true,
-							max: attackersData.length, // Y-axis should go up to the number of attackers
+							beginAtZero: true, // Start Y-axis at zero
 							ticks: {
-								stepSize: 1,
-								autoSkip: false
+								stepSize: 1, // Y-axis tick increments by 1
+								autoSkip: false // Do not skip any labels
 							}
 						}]
 					},
-					maintainAspectRatio: false
+					maintainAspectRatio: false // Allow dynamic resizing without keeping the aspect ratio fixed
 				}
 			};
 		
-			// Create the second chart
+			// Create and render the chart using the configuration defined above
 			chartThirdInstance = new Chart(ctxThird, config);
-
 		}
-
-		function generateFourthChart(totalServers, attackersData) {
-
-			if (chartFourthInstance) {
-				chartFourthInstance.destroy(); // Cancel previous chart if any exist
-			}
-
-			// Adjust the parent element's height and width for the chart canvas
-			fourthChart.parentNode.style.height = '400px';
-			fourthChart.parentNode.style.width = '800px';
-
-			// Initialize an array to store how many attackers penetrated each number of servers
-			// Create an array with length totalServers + 1, filled with 0
-			const penetrationCounts = Array(totalServers + 1).fill(0); 
 		
-			// Loop through each attacker's data to count how many servers they penetrated
+		function generateFourthChart(totalServers, attackersData) {
+		
+			if (chartFourthInstance) {
+				chartFourthInstance.destroy(); // Cancel previous chart if any exist to prevent data overlap.
+			}
+		
+			// Set the height and width of the chart container element (fourthChart).
+			fourthChart.parentNode.style.height = '400px';
+			fourthChart.parentNode.style.width = '770px';
+		
+			// Find the minimum and maximum number of servers penetrated across all attackers.
+			const minPenetrations = Math.min(...attackersData.map(attacker => attacker.data[attacker.data.length - 1].y));
+			const maxPenetrations = Math.max(...attackersData.map(attacker => attacker.data[attacker.data.length - 1].y));
+		
+			// Create an array with indices from the minimum to the maximum number of penetrations, initialized with zeros.
+			const penetrationCounts = Array(maxPenetrations - minPenetrations + 1).fill(0);
+		
+			// Loop through each attacker and increment the count for the number of servers they penetrated.
 			attackersData.forEach((attacker) => {
-				// Get the final number of penetrated servers for each attacker
-				const finalPenetrations = attacker.data[attacker.data.length - 1].y; 
-				// Increment the count for the respective number of servers
-				penetrationCounts[finalPenetrations]++; 
+				const finalPenetrations = attacker.data[attacker.data.length - 1].y; // Get the final number of servers penetrated for each attacker.
+				penetrationCounts[finalPenetrations - minPenetrations]++; // Adjust the index to account for potential negative values.
 			});
-
-			// Prepare the data for the chart in the format [{x: serversPenetrated, y: attackersCount}]
-			const chartFourthData = penetrationCounts.map((count, serversPenetrated) => {
-				return { x: serversPenetrated, y: count };
+		
+			// Map the penetrationCounts array into an array of objects suitable for Chart.js, where 'x' is the number of servers penetrated, and 'y' is the count of attackers who penetrated that number of servers.
+			const chartFourthData = penetrationCounts.map((count, index) => {
+				return { x: index + minPenetrations, y: count }; // Adjust index to represent actual penetration levels.
 			});
-
-			// Configure the second chart
+		
+			// Get the 2D rendering context for the fourthChart canvas.
 			const ctxFourth = document.getElementById('fourthChart').getContext('2d');
+		
+			// Configure the chart with the penetration data.
 			const config = {
-				type: 'line',  // You can use 'bar' or 'line' depending on your preference for distribution visualization
+				type: 'line',  // Specify the chart type as a line chart.
 				data: {
 					datasets: [{
-						label: 'Number of Attackers vs. Servers Penetrated',
-						borderColor: 'rgba(75, 192, 192, 1)', // Set line color
-						borderWidth: 2,
-						radius: 4,
-						pointBackgroundColor: 'rgba(75, 192, 192, 1)',
-						fill: false,
-						data: chartFourthData, // The data showing the number of attackers vs. number of servers hacked
+						label: 'Servers Penetrated vs. Number of Attackers',
+						borderColor: 'rgba(75, 192, 192, 1)', // Set line color.
+						borderWidth: 2,  // Set line width.
+						radius: 4,  // Set point radius size.
+						pointBackgroundColor: 'rgba(75, 192, 192, 1)', // Set point color.
+						fill: false, // Do not fill the area under the line.
+						data: chartFourthData, // Assign the processed penetration data to the chart.
 					}]
 				},
 				options: {
 					interaction: {
-						intersect: false // Ensure that interactions don't highlight intersections between datasets
+						intersect: false // Disable highlighting of intersections between lines.
 					},
 					plugins: {
-						legend: false // Disable the legend
+						legend: false // Disable the chart legend.
 					},
 					scales: {
+						// Configure the x-axis to display the number of servers penetrated.
 						xAxes: [{
-							title: {
+							scaleLabel: {
 								display: true,
-								text: 'Number of Servers Penetrated'
+								labelString: 'Number of Servers Penetrated' // Label for the x-axis.
 							},
-							type: 'linear',
-							beginAtZero: true,
-							max: totalServers, // X-axis goes up to the total number of servers
+							type: 'linear', // Linear scale for x-axis.
 							ticks: {
-								stepSize: 1, // Increment by 1 for each server hacked
-								autoSkip: false
+								stepSize: 1, // Set tick intervals to 1.
+								autoSkip: false // Do not skip any labels.
 							}
 						}],
+						// Configure the y-axis to display the number of attackers.
 						yAxes: [{
-							title: {
+							scaleLabel: {
 								display: true,
-								text: 'Number of Attackers'
+								labelString: 'Number of Attackers' // Label for the y-axis.
 							},
-							beginAtZero: true,
-							max: attackersData.length, // Y-axis should go up to the number of attackers
+							beginAtZero: true, // Start y-axis at 0.
 							ticks: {
-								stepSize: 1,
-								autoSkip: false
+								stepSize: 1, // Set tick intervals to 1.
+								autoSkip: false // Do not skip any labels.
 							}
 						}]
 					},
-					maintainAspectRatio: false
+					maintainAspectRatio: false // Allow the chart to resize dynamically without maintaining the original aspect ratio.
 				}
 			};
 		
-			// Create the second chart
+			// Create the chart using the Chart.js library and the configuration defined above.
 			chartFourthInstance = new Chart(ctxFourth, config);
-
 		}
 
 		// Function to handle the form submission
@@ -537,6 +600,30 @@
 		};
 	</script>
 
+	<h2>Code Description</h2>
+
 	<p>&nbsp;</p> 
+
+	<img src="assets/hmwrk2/secondFirst.png" alt="" width="844" height="786">
+
+	<p>The chart initialization and reset process ensures that each time a new chart is generated, any previous instance of the chart is removed, avoiding visual and data overlap. The function starts by checking if there is an existing chartSecondInstance and destroys it if present. After clearing the old chart, the function adjusts the chart's dimensions to fit within a predefined container, ensuring the visualization appears correctly. This preparation step is critical for rendering the chart cleanly and preventing conflicts with the new data that will be added.</p>
+
+	<p>The data simulation section focuses on simulating the penetration process for each attacker over a defined number of servers (or time steps). This is done through random trials where a random value is generated for each time step to determine if a penetration is successful. An additional random walk mechanism is introduced, where the number of successful attacks fluctuates by increasing or decreasing the number of penetrated servers based on another random value. During this process, Welford's algorithm is employed to compute the running mean and variance of successful attacks. This ensures that the function calculates the mean and variance dynamically as the attacks are simulated over time.</p>
+
+	<img src="assets/hmwrk2/secondSecond.png" alt="" width="844" height="192">
+
+	<p>The final section deals with dataset creation and chart configuration. It pushes individual datasets for each attacker, as well as additional datasets for relative frequency, absolute successful attacks, the running mean, and variance. The datasets array holds this information, which is then used to construct the chart. The configuration includes axes settings, line colors, and a legend that filters specific datasets to display. The chart is rendered using Chart.js with specific configuration options to ensure that the time steps (x-axis) and the number of servers penetrated (y-axis) are clearly displayed, allowing users to visually analyze the simulation results.</p>
+
+	<img src="assets/hmwrk2/secondThird.png" alt="" width="934" height="459">
+
+	<p>The given code handles the creation of a chart that visualizes how many attackers penetrated a certain number of servers. It starts by checking if there is an existing chartThirdInstance to avoid overlap. If such a chart exists, it is destroyed to ensure a clean canvas for the new chart. The height and width of the parent container (thirdChart.parentNode) are then explicitly set to ensure that the chart fits within a specific size on the page, providing a consistent visual appearance.</p>
+
+	<p>Next, the code focuses on determining the range of penetrations, including handling cases where attackers might have penetrated a negative number of servers due to some process like a random walk. The minPenetrations and maxPenetrations variables are computed by scanning the final penetration values of all attackers using the Math.min() and Math.max() functions. This ensures that both negative and positive penetration values are accounted for in the subsequent analysis.</p>
+
+	<img src="assets/hmwrk2/secondFourth.png" alt="" width="1172" height="444">
+
+	<p>The same holds true in the code above where the core of the data visualization is handled through the penetrationCounts array. This array's size is dynamically determined to accommodate all possible penetration values (from the minimum to the maximum). Each element of this array is initialized to zero and represents how many attackers achieved a specific number of penetrations. The forEach loop then iterates over the attackers' data, extracting their final penetration count. These counts are mapped into the penetrationCounts array, with an offset based on the minimum penetration value to properly handle negative values.</p>
+
+	<p>Finally, the penetrationCounts array is transformed into a format suitable for Chart.js by creating chartFourthData. This step maps the penetration count to an x-y format where the x-coordinate represents the number of servers penetrated (both negative and positive), and the y-coordinate indicates how many attackers achieved that penetration count. The data is then ready to be used for visual representation in the chart.</p>
 
 </body>
