@@ -59,7 +59,7 @@
 		let dataPoints = [];
 		let means = [];
 		let variances = [];
-		let mean = 0, M2 = 0, variance = 0;
+		let mean = 0, Var = 0, variance = 0;
 		let count = 0;
 
 		const ctx = document.getElementById('firstChart').getContext('2d');
@@ -89,7 +89,7 @@
 			means = [];
 			variances = [];
 			mean = 0;
-			M2 = 0;
+			Var = 0;
 			variance = 0;
 			count = 0;
 	
@@ -107,8 +107,8 @@
 			const delta = x - mean;
 			mean += delta / count;
 			const delta2 = x - mean;
-			M2 += delta * delta2;
-			variance = count < 2 ? 0 : M2 / (count - 1);
+			Var += delta * delta2;
+			variance = count < 2 ? 0 : Var / (count - 1);
 	
 			// Update data arrays
 			dataPoints.push(x);
@@ -183,10 +183,10 @@
 		let globalData = [];
 		let halfGlobalData = [];
 
-		const defaultN = 10;  // Default number of servers
-		const defaultM = 5;   // Default number of attackers
+		const defaultN = 20;  // Default number of servers
+		const defaultM = 10;   // Default number of attackers
 		const defaultP = 0.5; // Default probability
-		const defaultT = 5;   // Default time frame
+		const defaultT = 10;   // Default time frame
 
 		// Function to generate random colors for the lines
 		function getRandomColor() {
@@ -196,6 +196,32 @@
 				color += letters[Math.floor(Math.random() * 16)];
 			}
 			return color;
+		}
+
+		function recursiveMeanVariance(successfulAttacks, t = 0, count = 0, oldMean = 0, oldVar = 0, means = [], variances = []) {
+			if (t >= successfulAttacks.length) {
+				return { means, variances }; // Base case: Return the arrays when we've processed all time steps.
+			}
+		
+			const value = successfulAttacks[t];
+			if (!isNaN(value)) {
+				count++;
+				const delta = value - oldMean;
+				const newMean = oldMean + delta / count;
+				const delta2 = value - newMean;
+				const newVar = oldVar + delta * delta2;
+		
+				const variance = count < 2 ? 0 : newVar / (count - 1); // Variance is only valid after 2 points.
+		
+				means[t] = newMean;   // Store the current mean at time t.
+				variances[t] = variance; // Store the current variance at time t.
+		
+				// Recursive call to process the next time step.
+				return recursiveMeanVariance(successfulAttacks, t + 1, count, newMean, newVar, means, variances);
+			}
+		
+			// Skip if value is not a number.
+			return recursiveMeanVariance(successfulAttacks, t + 1, count, oldMean, oldVar, means, variances);
 		}
 
 		function generateSecondChart(totalServers, probabilities, timeFrame) {
@@ -216,15 +242,8 @@
 			let totalAttacks = [];
 			let successfulAttacks = [];
 			let relativeFreq = [];
-		
-			// Arrays and variables to compute and store mean and variance.
-			let means = [];
-			let variances = [];
-			let count = 0;
-			let mean = 0;
-			let M2 = 0;  // M2 is used in Welford's algorithm to compute variance.
-		
-			// Loop through each attacker in the simulation.
+
+			// For each attacker.
 			probabilities.forEach((p, index) => {
 				const data = [];  // Array to hold attacker's data for the full simulation.
 				const halfData = [];  // Array to hold attacker's data up to the specified timeFrame.
@@ -233,7 +252,6 @@
 				// Simulate the penetration process for each time step (server).
 				for (let t = 0; t <= totalServers; t++) {
 					const randomValue = Math.random();  // Random value to determine success or failure.
-					const secondRandomValue = Math.random();  // Additional random value for random walk.
 		
 					// Initialize the counters if they haven't been set for this time step.
 					if (!totalAttacks[t]) totalAttacks[t] = 0;
@@ -244,17 +262,13 @@
 					totalAttacks[t]++;
 		
 					// Check if the penetration is successful and update the count.
+
 					if (randomValue <= p) {
-						penetratedServers++;
-						successfulAttacks[t]++;
-					}
-		
-					// Implement random walk: increase or decrease the number of penetrated servers.
-					if (secondRandomValue > 0.5) {
 						penetratedServers++;
 						successfulAttacks[t]++;
 					} else {
 						penetratedServers--;
+						successfulAttacks[t]--;
 					}
 		
 					// Calculate the relative frequency of successful attacks.
@@ -267,18 +281,12 @@
 					if (t <= timeFrame) {
 						halfData.push({ x: t, y: penetratedServers });
 					}
-		
-					// Welford's algorithm for computing running mean and variance.
-					count++;
-					const delta = successfulAttacks[t] - mean;
-					mean += delta / count;
-					const delta2 = successfulAttacks[t] - mean;
-					M2 += delta * delta2;
-					const variance = count < 2 ? 0 : M2 / (count - 1);  // Variance only valid after 2 points.
-		
-					// Store the running mean and variance at each time step.
-					means[t] = mean;
-					variances[t] = variance;
+
+					const result = recursiveMeanVariance(successfulAttacks);
+    
+					// Assign computed means and variances to the appropriate arrays.
+					means = result.means;
+					variances = result.variances;
 				}
 		
 				// Save the full dataset for this attacker for future reference.
@@ -298,7 +306,7 @@
 					label: `Attacker ${index + 1}`,
 					borderColor: getRandomColor(),  // Assign a random color to this attacker's line.
 					borderWidth: 1,
-					radius: 1,
+					radius: 0.5,
 					data: data,
 					hidden: false  // Ensure that the attacker's data is shown by default.
 				});
@@ -410,7 +418,7 @@
 		
 			// Map the counts to the appropriate x and y coordinates for Chart.js
 			const chartThirdData = penetrationCounts.map((count, index) => {
-				return { x: index + minPenetrations, y: count }; // Shift the index back to real penetration values
+				return { x: index - 1 + minPenetrations, y: count }; // Shift the index back to real penetration values
 			});
 		
 			const ctxThird = document.getElementById('thirdChart').getContext('2d');
@@ -493,7 +501,7 @@
 		
 			// Map the penetrationCounts array into an array of objects suitable for Chart.js, where 'x' is the number of servers penetrated, and 'y' is the count of attackers who penetrated that number of servers.
 			const chartFourthData = penetrationCounts.map((count, index) => {
-				return { x: index + minPenetrations, y: count }; // Adjust index to represent actual penetration levels.
+				return { x: index - 1 + minPenetrations, y: count }; // Adjust index to represent actual penetration levels.
 			});
 		
 			// Get the 2D rendering context for the fourthChart canvas.
@@ -604,13 +612,13 @@
 
 	<p>&nbsp;</p> 
 
-	<img src="assets/hmwrk2/secondFirst.png" alt="" width="844" height="786">
+	<img src="assets/hmwrk2/secondFirst.png" alt="" width="1171" height="833">
 
 	<p>The chart initialization and reset process ensures that each time a new chart is generated, any previous instance of the chart is removed, avoiding visual and data overlap. The function starts by checking if there is an existing chartSecondInstance and destroys it if present. After clearing the old chart, the function adjusts the chart's dimensions to fit within a predefined container, ensuring the visualization appears correctly. This preparation step is critical for rendering the chart cleanly and preventing conflicts with the new data that will be added.</p>
 
-	<p>The data simulation section focuses on simulating the penetration process for each attacker over a defined number of servers (or time steps). This is done through random trials where a random value is generated for each time step to determine if a penetration is successful. An additional random walk mechanism is introduced, where the number of successful attacks fluctuates by increasing or decreasing the number of penetrated servers based on another random value. During this process, Welford's algorithm is employed to compute the running mean and variance of successful attacks. This ensures that the function calculates the mean and variance dynamically as the attacks are simulated over time.</p>
+	<p>The data simulation section focuses on simulating the penetration process for each attacker over a defined number of servers (or time steps). This is done through random trials where a random value is generated for each time step to determine if a penetration is successful. An additional random walk mechanism is introduced, where the number of successful attacks fluctuates by increasing or decreasing the number of penetrated servers based on another random value. During this process, a recursive function calculates the mean and variance of data at each time step.</p>
 
-	<img src="assets/hmwrk2/secondSecond.png" alt="" width="844" height="192">
+	<img src="assets/hmwrk2/secondSecond.png" alt="" width="1171" height="390">
 
 	<p>The final section deals with dataset creation and chart configuration. It pushes individual datasets for each attacker, as well as additional datasets for relative frequency, absolute successful attacks, the running mean, and variance. The datasets array holds this information, which is then used to construct the chart. The configuration includes axes settings, line colors, and a legend that filters specific datasets to display. The chart is rendered using Chart.js with specific configuration options to ensure that the time steps (x-axis) and the number of servers penetrated (y-axis) are clearly displayed, allowing users to visually analyze the simulation results.</p>
 
@@ -626,4 +634,21 @@
 
 	<p>Finally, the penetrationCounts array is transformed into a format suitable for Chart.js by creating chartFourthData. This step maps the penetration count to an x-y format where the x-coordinate represents the number of servers penetrated (both negative and positive), and the y-coordinate indicates how many attackers achieved that penetration count. The data is then ready to be used for visual representation in the chart.</p>
 
+	<h2>Dynamics of Mean and Variance in Penetration Simulations</h2>
+
+	<p>In the simulations involving server penetration, the mean number of successes tends to stabilize over time following an initial phase of fluctuations. This pattern suggests that as the number of attempts increases—whether through more servers or attackers—the system naturally converges toward a predictable equilibrium that mirrors the expected probability of success. As attempts accumulate, the average number of penetrations aligns with this theoretical success rate, smoothing out early irregularities in the process.</p>
+	<p>Variance, representing the spread or variability in outcomes, behaves differently. Initially, variance may rise as the system adjusts to random fluctuations. However, in many systems, variance eventually stabilizes. In models like random walks, though, variance consistently increases over time due to the accumulating nature of events. This happens because, while the mean stabilizes, fluctuations in the number of penetrations persist, showing that the system contains inherent variability even as averages level off.</p>
+	<p>In the code, as seen in the calculation of means and variances for each time step, this behavior is evident. The mean adjusts progressively with each new successful attack, using Welford's method to update the average without recalculating it from scratch. Variance is similarly adjusted at each step, which accounts for both the current data and its difference from the updated mean. The result is a dynamic reflection of how outcomes stabilize over time, yet maintain a degree of uncertainty.</p>
+
+	<h2>Absolute vs. Relative Frequency in Attacks</h2>
+
+	<p>In the simulation's tracking of attack success, the absolute frequency—representing the total number of successful penetrations—can be volatile, especially at the beginning when fewer attacks have occurred. This instability arises because with fewer events, each success or failure has a disproportionately large effect on the outcome, leading to higher variability. As the simulation continues and the number of attempts increases, the absolute frequency tends to stabilize, though large fluctuations may still occur at times due to the randomness of attack success.</p>
+	<p>In contrast, the relative frequency, which normalizes the number of successful penetrations by the total number of attempts, offers a much smoother and clearer depiction of the system's behavior. As attempts accumulate, relative frequency approaches the theoretical success rate, providing a more consistent measure of performance. In the code, the relative frequency is calculated for each time step by dividing successful attacks by the total number of attempts, which results in a smoother dataset compared to the more volatile absolute frequency.</p>
+	<p>This smoother relative frequency is particularly helpful in long-term analysis, as it highlights how the system's performance converges toward its expected behavior. It becomes a useful tool for evaluating how well the attackers are performing relative to the underlying probabilities.</p>
+
+	<h2>Comparing the Two Distributions</h2>
+
+	<p>The key difference between absolute and relative frequency distributions lies in how they respond to variability. Absolute frequency tends to fluctuate more dramatically, especially in early stages, because every individual success or failure weighs heavily. On the other hand, relative frequency provides a more stable and normalized perspective, as it factors in the total number of attempts, smoothing out erratic behavior as the process continues.</p>
+
+	<p>From a practical standpoint, relative frequency gives a better picture of how the system's performance aligns with theoretical expectations. In the simulation, tracking both absolute and relative frequencies provides valuable insights: the absolute frequency helps to understand the raw outcome count, while the relative frequency is better suited for understanding the system's overall behavior as attempts scale up. This dual tracking method allows you to see both immediate results and long-term trends, with relative frequency offering a clearer depiction of how close the system is to achieving its expected success rate.</p>
 </body>
