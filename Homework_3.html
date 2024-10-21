@@ -1,0 +1,642 @@
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Homework #2</title>
+	<link rel="stylesheet" href="css/styles.css">
+	<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+</head>
+<body>
+	<a href="index.html">Home</a>
+	<h1>Statistics - Homework #3 [Y.2024-2025]</h1>
+	<h2>Why the Median is the minimum point in the sum of absolute deviations</h2>
+	<p>We need to explain why the median minimizes the sum of absolute deviations. This means that if we take the absolute differences between each number in a set and some value \(c\), the sum is smallest when \(c\) is the median of the set.</p>
+	<p>First we need some key concepts to understand the problem, which are:
+		<ul>
+			<li><b>Absolute deviation</b>
+				<p>
+					This is the absolute distance between two numbers. For example, if we have numbers  \({x_1}\)  and  \(c\), the absolute deviation is \(|{x_1}-c|\).
+				</p>
+			</li>
+			<li><b>Sum of absolute deviations</b>
+				<p>
+					For a set of numbers  \({x_1}\), \({x_2}\), \(…\), \({x_n}\), the sum of absolute deviations from some point \(c\) is:
+					\[\sum_{i=1}^{n} |{x_i}-c| \\\]
+				</p>
+			</li>
+		</ul>
+		Our goal is to find which value of \(c\) makes this sum the smallest. It turns out the <b>median</b> does this.
+	</p>
+	<h3>Simple Set of Numbers</h3>
+	<p>
+		Let's say we have a simple set of numbers:
+		\[1,2,3,4,5\]
+		<b>Step 1: We try using the median</b>
+	</p>
+	<p>
+		The <b>median</b> of this set is 3 (the middle number). Now, let's calculate the sum of absolute deviations from 3:
+		\[|1 - 3| + |2 - 3| + |3 - 3| + |4 - 3| + |5 - 3| = 2 + 1 + 0 + 1 + 2 = 6\]
+		<b>Step 2: We try using another number</b>
+	</p>
+	<p>
+		Let's try using  \(c = 2\)  instead of the median. Now, we calculate the sum of absolute deviations from 2:
+		\[|1 - 2| + |2 - 2| + |3 - 2| + |4 - 2| + |5 - 2| = 1 + 0 + 1 + 2 + 3 = 7\]
+		The sum is \(7\), which is bigger than \(6\).
+	</p>
+	<p>
+		<b>Step 3: We try using \(c = 4\) </b>
+	</p>
+	<p>
+		As the final step we try using \(c = 4\):
+		\[|1 - 4| + |2 - 4| + |3 - 4| + |4 - 4| + |5 - 4| = 3 + 2 + 1 + 0 + 1 = 7\]
+		Again, the sum is 7, which is bigger than 6.
+	</p>
+	<p>
+		<b>Conclusion:</b> The median, \(c = 3\), gives the smallest sum of absolute deviations (\(6\)). Any other value of \(c\) will give a larger sum.
+	</p>
+	<b>Why Does This Work?</b>
+	<p>
+		We can think of the median as the “balancing point” where half the data points are below and half are above. If we move \(c\) away from the median (either up or down), the total distance to the data points increases because we're getting farther from most of the points.<br/>
+		In this way, the <b>median</b> is the point that minimizes the total distance from all the numbers when using absolute deviations.
+	</p>
+	<h3>More numbers</h3>
+	<p>
+		Let's try another set:
+		\[1,2,4,6,8\]
+		The <b>median</b> here is 4.
+		<ul>
+			<li>If \(c = 4\), the sum of absolute deviations is:
+				\[|1 - 4| + |2 - 4| + |4 - 4| + |6 - 4| + |8 - 4| = 3 + 2 + 0 + 2 + 4 = 11\]
+			</li>
+			<li>If \(c = 3\) (not the median), the sum is:
+				\[|1 - 3| + |2 - 3| + |4 - 3| + |6 - 3| + |8 - 3| = 2 + 1 + 1 + 3 + 5 = 12\]
+			</li>
+			<li>If \(c = 5\), the sum is:
+				\[|1 - 5| + |2 - 5| + |4 - 5| + |6 - 5| + |8 - 5| = 4 + 3 + 1 + 1 + 3 = 12\]
+			</li>
+		</ul>
+		Once again, the sum of absolute deviations is minimized when \(c = 4\), the <b>median</b>. The median splits the data in a way that balances the number of points above and below it. This balance minimizes the total distance, which is why the sum of absolute deviations is smallest when we choose the median.
+	</p>
+
+	<h2>Common Ways to Define the “Center” of a Distribution</h2>
+
+	<p>What follow are some common measures that describe a central tendency (also “center” or "location") of a data set.</p>
+	
+	<p><b>Mean (Average):</b></p>
+	<p>
+		The mean is the sum of all data points divided by the number of data points defined by the following formula:
+		\[\frac{1}{n}\sum_{i=1}^{n} {x_i} \\\]
+		E.g.:
+		\[Mean=\frac{1+2+3+4+5}{5}=3\]
+		An extension of this could be weighting the values differently, leading to a <b>weighted mean</b> where certain values are given more importance. This is useful when some data points carry more significance than others.
+	</p>
+	<p><b>Median:</b></p>
+	<p>The median is the middle value when the data points are arranged in order. If there's an even number of points, it's the average of the two middle values.
+		E.g: For the set \([1,2,3,4,5]\), the median is \(3\).
+	</p>
+	<p>An extension of this could be that instead of focusing on the middle, we could create a concept like a “trimmed median” where we remove the extreme values before calculating the median. This can help when we want to ignore outliers.</p>
+	<p><b>Mode:</b></p>
+	<p>The mode is the most frequent value in a data set.
+		E.g: For the set \([1,2,2,3,4,5]\), the mode is \(2\) (since it appears more frequently than any other number).
+	</p>
+	<p>An extension of this could look at the modal interval for continuous data, which generalizes the mode to an interval with the highest density of data points.</p>
+	<p><b>Midrange:</b></p>
+	<p>The formula for it would be:
+		\[Midrange=\frac{Min + Max}{2}\]
+		E.g: For the set \([1,2,3,4,5]\), the midrange is:
+		\[Midrange=\frac{1+5}{2}=3\]
+		An extension of this could create a generalized version like the <b>mid-percentile range</b>, where instead of the minimum and maximum, we take other percentiles (like the 10th and 90th percentile) to avoid being overly affected by outliers.
+	</p>
+	<p><b>Geometric Mean</b></p>
+	<p>The geometric mean is the \(n\)-th root of the product of all the data points described by the following formula:
+		\[ \left( \prod_{i=1}^{n} {x_i} \right)^\frac{1}{n} \]
+		E.g.: For the set \([1,2,3]\), the geometric mean is:
+		\[
+		Geometric Mean = (1+2+3)^\frac{1}{3}=\sqrt[3]{6}\approx 1,82
+		\]
+		An extension of this could be generalized for datasets that grow exponentially, and we could adapt it to other “non-arithmetic” scenarios where multiplicative effects are more important than additive ones.
+	</p>
+	
+	<h3>Some possible ways of extension or generalization</h3>
+
+	<p><b>Quantiles and Percentiles</b></p>
+	<p>Quantiles split the data into equal-sized groups. For example, the 50th percentile is the median. You could define the “center” as the mean of multiple quantiles, like the average of the 25th and 75th percentiles to get a “balanced” center, which might be more stable if there are outliers.</p>
+
+	<p><b>Barycenter (Weighted Mean in Geometry)</b></p>
+	<p>A barycenter is like a weighted mean but in multiple dimensions. For example, in statistics or geometry, it's the point where the mass of a system is perfectly balanced. For the generalization of the multi-dimensional data (like coordinates or vectors), we could think of the center as the weighted center of gravity for all the data points.</p>
+
+	<p><b>Trimmed Mean (Robust Mean)</b></p>
+	<p>The trimmed mean removes a certain percentage of the smallest and largest data points before calculating the mean. For an extension of this we could create a robust version of the median where we discard a percentage of extreme values before calculating it, similar to the trimmed mean, but more focused on medians and absolute deviations.</p>
+
+	<p><b>Entropy-Based Center</b></p>
+	<p>For distributions with uncertainty (like in probability theory), we could define a center based on the concept of entropy or information content, the center would be the value that minimizes the uncertainty or maximizes the information. This is useful in fields like machine learning or physics, where distributions can be complex, and the traditional “center” might not reflect the true “balance” of the data.</p>
+
+	<p><b>Center Based on a Cost Function</b></p>
+	<p>In some applications, we may want to find the center that minimizes some cost function (like the distance between points). The mean minimizes squared differences, the median minimizes absolute differences, but we could define a new cost function (like a mix of the two) and find the center that minimizes that. An extension of this could define a custom cost function based on our specific needs. For example, minimizing a combination of squared and absolute differences might give we a new type of center that balances both sensitivity to outliers and accuracy.</p>
+
+	<h3>Infinite Variations</h3>
+	<p>Since there are many ways to adjust the rules, each variation can lead to a new definition of “center.” For example, we could:
+		<ul>
+			<li>Change how we treat outliers</li>
+			<li>Apply different weights to data points</li>
+			<li>Minimize different types of “distance” (absolute, squared, higher powers, etc.)</li>
+			<li>Use different statistical properties like quantiles, ranks, or energy functions</li>
+		</ul>
+	Each of these choices leads to a new, valid way to think about the center, and since there are countless ways to make these choices, the number of possible definitions is infinite.</p>
+
+	<h2>Continuous time attacks</h2>
+
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.js"></script>
+
+	<div>
+		<canvas id="secondChart" width="100" height="100"></canvas>
+	</div>
+
+	<p>&nbsp;</p> 
+
+	<form action="">
+		<label for="n_Value">N (Servers)</label>
+		<input id="n_Value" type="number" value="10" min="1" max="100" name="n Value" required placeholder="Insert N value (Servers)">
+		<label for="m_Value">M (Hackers)</label>
+		<input id="m_Value" type="number" value="5" min="1" max="100" name="m Value"  required placeholder="Insert M value (Hackers)">
+		<label for="p_Value">P (Probability)</label>
+		<input id="p_Value" type="number" value="0.5" min="0.01" max="1.00" name="p Value" required step="0.01" placeholder="Insert P value (Probability)">
+		<label for="t_Value">T (Time)</label>
+		<input id="t_Value" type="number" value="10" min="1" max="100" name="t Value" required placeholder="Insert T value (Time Step)">
+		<label for="l_Value">L (Lambda)</label>
+		<input id="l_Value" type="number" value="10" min="1" max="100" name="l Value" required placeholder="Insert L value (Lambda)">
+		<label for="dt_Value">dt (Interval)</label>
+		<input id="dt_Value" type="number" value="10" min="1" max="100" name="dt Value" required placeholder="Insert dt value (dt Interval)">
+		<input type="submit" value="Simulate">
+	</form>
+	
+	<p>&nbsp;</p>
+
+	<div>
+		<canvas id="thirdChart" width="100" height="100"></canvas>
+	</div>
+
+	<p>&nbsp;</p> 
+
+	<div>
+		<canvas id="fourthChart" width="100" height="100"></canvas>
+	</div>
+
+	<p>&nbsp;</p> 
+
+	<script>
+		// Reference the canvas element where the chart will be drawn
+		const ctxSecond = document.getElementById('secondChart');
+		const ctxThird = document.getElementById('thirdChart');
+		const ctxFourth = document.getElementById('fourthChart');
+	</script>
+
+	<p>&nbsp;</p>
+
+	<script>
+		let chartSecondInstance = null;
+		let chartThirdInstance = null;
+		let chartFourthInstance = null;
+		let globalData = [];
+		let halfGlobalData = [];
+
+		const defaultN = 20;  // Default number of servers
+		const defaultM = 10;  // Default number of attackers
+		const defaultP = 0.5; // Default probability
+		const defaultT = 10;  // Default time frame
+		const defaultL = 10;  // Default lambda
+		const defaultdt = 10; // Default dt
+
+		// Function to generate random colors for the lines
+		function getRandomColor() {
+			const letters = '0123456789ABCDEF';
+			let color = '#';
+			for (let i = 0; i < 6; i++) {
+				color += letters[Math.floor(Math.random() * 16)];
+			}
+			return color;
+		}
+
+		function recursiveMeanVariance(successfulAttacks, t = 0, count = 0, oldMean = 0, oldVar = 0, means = [], variances = []) {
+			if (t >= successfulAttacks.length) {
+				return { means, variances }; // Base case: Return the arrays when we've processed all time steps.
+			}
+		
+			const value = successfulAttacks[t];
+			if (!isNaN(value)) {
+				count++;
+				const delta = value - oldMean;
+				const newMean = oldMean + delta / count;
+				const delta2 = value - newMean;
+				const newVar = oldVar + delta * delta2;
+		
+				const variance = count < 2 ? 0 : newVar / (count - 1); // Variance is only valid after 2 points.
+		
+				means[t] = newMean;   // Store the current mean at time t.
+				variances[t] = variance; // Store the current variance at time t.
+		
+				// Recursive call to process the next time step.
+				return recursiveMeanVariance(successfulAttacks, t + 1, count, newMean, newVar, means, variances);
+			}
+		
+			// Skip if value is not a number.
+			return recursiveMeanVariance(successfulAttacks, t + 1, count, oldMean, oldVar, means, variances);
+		}
+
+		function generateSecondChart(totalServers, probabilities, timeFrame, delta, lambda) {
+
+			if (chartSecondInstance) {
+				chartSecondInstance.destroy(); // If there's an existing chart instance, destroy it to avoid overlap.
+			}
+		
+			// Adjust the size of the chart to fit its container.
+			secondChart.parentNode.style.height = '400px';
+			secondChart.parentNode.style.width = '770px';
+		
+			// Initialize datasets and tracking arrays for the chart.
+
+			const datasets = [];
+			const totalTime = totalServers;  // Set total time steps equal to the total number of servers.
+			const dt = 1 / delta; // Divide time into small intervals dt
+			let maxTime = 0; // Total time based on the number of servers
+		
+			// Arrays to track the total number of attacks, successful attacks, and relative frequency over time.
+			let totalAttacks = [];
+			let successfulAttacks = [];
+			let relativeFreq = [];
+
+			// For each attacker.
+			probabilities.forEach((p, index) => {
+				const data = [];  // Array to hold attacker's data for the full simulation.
+				const halfData = [];  // Array to hold attacker's data up to the specified timeFrame.
+				let penetratedServers = 0;  // Track the number of servers penetrated by this attacker.
+				let currentTime = 0; // Track current time
+		
+				// Simulate the penetration process for each time step (server).
+				while (penetratedServers < totalServers) {
+            		currentTime += dt; // Increment the time by the next attack time
+					// Probability of an attack happening in this small interval
+					const attackHappens = Math.random() < lambda * dt;
+					if (maxTime < currentTime) {
+						maxTime = currentTime
+					}
+
+					totalAttacks[Math.floor(currentTime)] = totalAttacks[Math.floor(currentTime)] || 0;
+					successfulAttacks[Math.floor(currentTime)] = successfulAttacks[Math.floor(currentTime)] || 0;
+
+					totalAttacks[Math.floor(currentTime)]++;
+
+					// If an attack occurs, check if it succeeds
+					if (attackHappens) {
+						if (Math.random() <= p) { // Check success probability p
+							penetratedServers++;
+							successfulAttacks[Math.floor(currentTime)]++;
+						}
+					}
+
+					// Calculate relative frequency of successful attacks
+					relativeFreq[Math.floor(currentTime)] = successfulAttacks[Math.floor(currentTime)] / totalAttacks[Math.floor(currentTime)];
+
+					// Store the attacker's progress
+					data.push({ x: currentTime, y: penetratedServers });
+
+					if (currentTime <= timeFrame) {
+						halfData.push({ x: currentTime, y: penetratedServers });
+					}
+		
+					const result = recursiveMeanVariance(successfulAttacks);
+					means = result.means;
+					variances = result.variances;
+				}
+		
+				// Save the full dataset for this attacker for future reference.
+				globalData.push({
+					label: `Attacker ${index + 1}`,
+					data: data
+				});
+		
+				// Save the partial dataset (up to timeFrame) for this attacker.
+				halfGlobalData.push({
+					label: `Attacker ${index + 1}`,
+					data: halfData
+				});
+		
+				// Add the attacker's dataset to the chart.
+				datasets.push({
+					label: `Attacker ${index + 1}`,
+					borderColor: getRandomColor(),  // Assign a random color to this attacker's line.
+					borderWidth: 1,
+					radius: 0.5,
+					data: data,
+					hidden: false  // Ensure that the attacker's data is shown by default.
+				});
+			});
+		
+			/* Add the dataset representing the relative frequency of successful attacks.
+			datasets.push({
+				label: 'Successful Attacks (Relative)',
+				borderColor: 'rgb(255, 255, 0)',  // Yellow line for relative frequency.
+				borderWidth: 5,
+				radius: 4,
+				data: relativeFreq.map((y, x) => ({ x, y })),  // Map time step (x) to frequency (y).
+				showInLegend: true
+			});
+		
+			// Add the dataset representing the absolute number of successful attacks.
+			datasets.push({
+				label: 'Successful Attacks (Absolute)',
+				borderColor: 'rgb(0, 255, 0)',  // Green line for absolute number of successful attacks.
+				borderWidth: 5,
+				radius: 4,
+				data: successfulAttacks.map((y, x) => ({ x, y })),  // Map time step (x) to successes (y).
+				showInLegend: true
+			});*/
+			
+			/* Add the dataset representing the mean of successful attacks over time.
+			datasets.push({
+				label: 'Mean of Successful Attacks',
+				borderColor: 'rgb(0, 0, 255)',  // Blue line for the mean.
+				borderWidth: 5,
+				radius: 4,
+				data: means.map((y, x) => ({ x, y })),  // Map time step (x) to mean (y).
+				showInLegend: true
+			});
+		
+			// Add the dataset representing the variance of successful attacks over time.
+			datasets.push({
+				label: 'Variance of Successful Attacks',
+				borderColor: 'rgb(255, 0, 0)',  // Red line for variance.
+				borderWidth: 5,
+				radius: 4,
+				data: variances.map((y, x) => ({ x, y })),  // Map time step (x) to variance (y).
+				showInLegend: true
+			});*/
+			
+			// Configure and create the chart.
+			const ctxSecond = document.getElementById('secondChart').getContext('2d');
+			const config = {
+				type: 'line',  // Line chart for visualization.
+				data: { datasets },  // Data contains all the datasets created above.
+				options: {
+					interaction: { intersect: false },  // Avoid highlighting intersections between lines.
+					legend: {
+						display: true,  // Display the legend with dataset labels.
+						labels: {
+							// Filter the datasets that should appear in the legend.
+							filter: function(item) {
+								return item.text === 'Successful Attacks (Relative)' || item.text === 'Successful Attacks (Absolute)' || item.text === 'Mean of Successful Attacks' || item.text === 'Variance of Successful Attacks';
+							}
+						}
+					},
+					scales: {
+						// Configure the x-axis.
+						xAxes: [{
+							scaleLabel: { display: true, labelString: 'Time (Attempts)' },  // Label for x-axis.
+							type: 'linear', beginAtZero: true, max: maxTime,  // X-axis limits.
+							ticks: { autoSkip: false, stepSize: dt, max: maxTime }  // Tick marks on x-axis.
+						}],
+						// Configure the y-axis.
+						yAxes: [{
+							scaleLabel: { display: true, labelString: 'Number of Servers Penetrated' },  // Label for y-axis.
+							type: 'linear', beginAtZero: true, stepSize: 1,  // Y-axis starts at zero and increases by 1.
+							suggestedMax: Math.max(successfulAttacks),  // Suggested max based on the highest number of successful attacks.
+							ticks: { autoSkip: false }
+						}]
+					},
+					maintainAspectRatio: false  // Allow the chart to adjust its size dynamically.
+				}
+			};
+		
+			// Create the chart instance.
+			chartSecondInstance = new Chart(ctxSecond, config);
+		}
+
+		function generateThirdChart(totalServers, attackersData) {
+
+			if (chartThirdInstance) {
+				chartThirdInstance.destroy(); // Cancel previous chart if any exist to prevent overlap
+			}
+		
+			thirdChart.parentNode.style.height = '400px';  // Set the height of the chart container
+			thirdChart.parentNode.style.width = '770px';   // Set the width of the chart container
+		
+			// Initialize an array to store how many attackers penetrated each number of servers, including negative values
+			const minPenetrations = Math.min(...attackersData.map(attacker => attacker.data[attacker.data.length - 1].y));
+			// Find the minimum number of penetrations (to handle negative penetrations)
+			const maxPenetrations = Math.max(...attackersData.map(attacker => attacker.data[attacker.data.length - 1].y));
+			// Find the maximum number of penetrations
+		
+			// Adjust array size to handle both negative and positive values
+			// The array size is (maxPenetrations - minPenetrations + 1), to fit all possible penetration values.
+			const penetrationCounts = Array(maxPenetrations - minPenetrations + 1).fill(0);
+		
+			// Loop through each attacker and count how many servers they penetrated
+			attackersData.forEach((attacker) => {
+				const finalPenetrations = attacker.data[attacker.data.length - 1].y; // Get the final penetration count of each attacker
+				penetrationCounts[finalPenetrations - minPenetrations]++; // Shift index by the minimum penetration value to handle negatives
+			});
+		
+			// Map the counts to the appropriate x and y coordinates for Chart.js
+			const chartThirdData = penetrationCounts.map((count, index) => {
+				return { x: index - 1 + minPenetrations, y: count }; // Shift the index back to real penetration values
+			});
+		
+			const ctxThird = document.getElementById('thirdChart').getContext('2d');
+			// Get the 2D rendering context for the third chart
+		
+			const config = {
+				type: 'line', // Define the chart type as a line chart
+				data: {
+					datasets: [{
+						label: 'Servers Penetrated vs. Number of Attackers',
+						borderColor: 'rgba(75, 192, 192, 1)', // Color for the line
+						borderWidth: 2,  // Width of the line
+						radius: 4,  // Radius of the points on the line
+						pointBackgroundColor: 'rgba(75, 192, 192, 1)', // Color for the points
+						fill: false, // Do not fill under the line
+						data: chartThirdData, // Data to plot on the chart
+					}]
+				},
+				options: {
+					interaction: {
+						intersect: false // Ensure that interactions don't highlight intersections between datasets
+					},
+					plugins: {
+						legend: false // Disable the legend for the chart
+					},
+					scales: {
+						xAxes: [{
+							scaleLabel: {
+								display: true,
+								labelString: 'Number of Servers Penetrated'  // X-axis label
+							},
+							type: 'linear',
+							ticks: {
+								stepSize: 1, // X-axis tick increments by 1 for each server hacked
+								autoSkip: false // Do not skip any labels
+							}
+						}],
+						yAxes: [{
+							scaleLabel: {
+								display: true,
+								labelString: 'Number of Attackers' // Y-axis label
+							},
+							beginAtZero: true, // Start Y-axis at zero
+							ticks: {
+								stepSize: 1, // Y-axis tick increments by 1
+								autoSkip: false // Do not skip any labels
+							}
+						}]
+					},
+					maintainAspectRatio: false // Allow dynamic resizing without keeping the aspect ratio fixed
+				}
+			};
+		
+			// Create and render the chart using the configuration defined above
+			chartThirdInstance = new Chart(ctxThird, config);
+		}
+		
+		function generateFourthChart(totalServers, attackersData) {
+		
+			if (chartFourthInstance) {
+				chartFourthInstance.destroy(); // Cancel previous chart if any exist to prevent data overlap.
+			}
+		
+			// Set the height and width of the chart container element (fourthChart).
+			fourthChart.parentNode.style.height = '400px';
+			fourthChart.parentNode.style.width = '770px';
+		
+			// Find the minimum and maximum number of servers penetrated across all attackers.
+			const minPenetrations = Math.min(...attackersData.map(attacker => attacker.data[attacker.data.length - 1].y));
+			const maxPenetrations = Math.max(...attackersData.map(attacker => attacker.data[attacker.data.length - 1].y));
+		
+			// Create an array with indices from the minimum to the maximum number of penetrations, initialized with zeros.
+			const penetrationCounts = Array(maxPenetrations - minPenetrations + 1).fill(0);
+		
+			// Loop through each attacker and increment the count for the number of servers they penetrated.
+			attackersData.forEach((attacker) => {
+				const finalPenetrations = attacker.data[attacker.data.length - 1].y; // Get the final number of servers penetrated for each attacker.
+				penetrationCounts[finalPenetrations - minPenetrations]++; // Adjust the index to account for potential negative values.
+			});
+		
+			// Map the penetrationCounts array into an array of objects suitable for Chart.js, where 'x' is the number of servers penetrated, and 'y' is the count of attackers who penetrated that number of servers.
+			const chartFourthData = penetrationCounts.map((count, index) => {
+				return { x: index - 1 + minPenetrations, y: count }; // Adjust index to represent actual penetration levels.
+			});
+		
+			// Get the 2D rendering context for the fourthChart canvas.
+			const ctxFourth = document.getElementById('fourthChart').getContext('2d');
+		
+			// Configure the chart with the penetration data.
+			const config = {
+				type: 'line',  // Specify the chart type as a line chart.
+				data: {
+					datasets: [{
+						label: 'Servers Penetrated vs. Number of Attackers',
+						borderColor: 'rgba(75, 192, 192, 1)', // Set line color.
+						borderWidth: 2,  // Set line width.
+						radius: 4,  // Set point radius size.
+						pointBackgroundColor: 'rgba(75, 192, 192, 1)', // Set point color.
+						fill: false, // Do not fill the area under the line.
+						data: chartFourthData, // Assign the processed penetration data to the chart.
+					}]
+				},
+				options: {
+					interaction: {
+						intersect: false // Disable highlighting of intersections between lines.
+					},
+					plugins: {
+						legend: false // Disable the chart legend.
+					},
+					scales: {
+						// Configure the x-axis to display the number of servers penetrated.
+						xAxes: [{
+							scaleLabel: {
+								display: true,
+								labelString: 'Number of Servers Penetrated' // Label for the x-axis.
+							},
+							type: 'linear', // Linear scale for x-axis.
+							ticks: {
+								stepSize: 1, // Set tick intervals to 1.
+								autoSkip: false // Do not skip any labels.
+							}
+						}],
+						// Configure the y-axis to display the number of attackers.
+						yAxes: [{
+							scaleLabel: {
+								display: true,
+								labelString: 'Number of Attackers' // Label for the y-axis.
+							},
+							beginAtZero: true, // Start y-axis at 0.
+							ticks: {
+								stepSize: 1, // Set tick intervals to 1.
+								autoSkip: false // Do not skip any labels.
+							}
+						}]
+					},
+					maintainAspectRatio: false // Allow the chart to resize dynamically without maintaining the original aspect ratio.
+				}
+			};
+		
+			// Create the chart using the Chart.js library and the configuration defined above.
+			chartFourthInstance = new Chart(ctxFourth, config);
+		}
+
+		// Function to handle the form submission
+		document.querySelector('form').addEventListener('submit', function(event) {
+			// Prevent the default form submission
+			event.preventDefault();
+
+			// Reset charts and globalData before new simulation
+			globalData = [];
+			halfGlobalData = [];
+
+			// Get the values of n (total servers) and p (penetration probability) from the input fields
+			const n = parseInt(document.getElementById('n_Value').value);
+			const p = parseFloat(document.getElementById('p_Value').value);
+			const m = parseInt(document.getElementById('m_Value').value);
+			const t = parseInt(document.getElementById('t_Value').value);
+			const l = parseInt(document.getElementById('l_Value').value);
+			const dt = parseInt(document.getElementById('dt_Value').value);
+
+
+			// Generate an array of probabilities for each attacker
+			const probabilities = Array(m).fill(p);
+
+			ctxSecond.getContext('2d').clearRect(0, 0, ctxSecond.width, ctxSecond.height);  // Clear the canvas
+			generateSecondChart(n, probabilities, t, dt, l);  // Generate the chart with the new parameters
+			ctxThird.getContext('2d').clearRect(0, 0, ctxThird.width, ctxThird.height);
+			generateThirdChart(n, halfGlobalData);
+			ctxFourth.getContext('2d').clearRect(0, 0, ctxFourth.width, ctxFourth.height);
+			generateFourthChart(n, globalData);
+		});
+
+		window.onload = function() {
+			// Set default values for inputs
+			document.getElementById('n_Value').value = defaultN;
+			document.getElementById('m_Value').value = defaultM;
+			document.getElementById('p_Value').value = defaultP;
+			document.getElementById('t_Value').value = defaultT;
+			document.getElementById('l_Value').value = defaultL;
+			document.getElementById('dt_Value').value = defaultdt;
+		
+			// Generate the charts using the default values
+			const probabilities = Array(defaultM).fill(defaultP);
+		
+			// Clear previous content
+			ctxSecond.getContext('2d').clearRect(0, 0, ctxSecond.width, ctxSecond.height);  
+			generateSecondChart(defaultN, probabilities, defaultT, defaultdt, defaultL);
+			ctxThird.getContext('2d').clearRect(0, 0, ctxThird.width, ctxThird.height);
+			generateThirdChart(defaultN, halfGlobalData);
+			ctxFourth.getContext('2d').clearRect(0, 0, ctxFourth.width, ctxFourth.height);
+			generateFourthChart(defaultN, globalData);
+		};
+	</script>
+
+
+
+
+	<p>&nbsp;</p>
+
+</body>
