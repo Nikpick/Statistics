@@ -12,7 +12,7 @@ body {
     margin-top: 3%;    /* 30px would be about 3% of 1000px */
     background: rgb(255, 255, 255);
     text-align: justify;
-    font-family: 'MyCustomFont';
+    font-family: 'MyCustomFont', sans-serif;
 }
 
 .canvas-container {
