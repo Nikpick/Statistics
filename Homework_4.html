@@ -1,0 +1,205 @@
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Homework #4</title>
+	<link rel="stylesheet" href="css/styles.css">
+	<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+</head>
+<body>
+	<a href="index.html">Home</a>
+	<h1>Statistics - Homework #4 [Y.2024-2025]</h1>
+	<h2>Statistical Independence</h2>
+	<p>Statistical independence is a foundational concept in probability and statistics, describing scenarios in which the occurrence of one event has no influence on the occurrence of another. Formally, two events  A  and  B  are considered independent if and only if the probability of their intersection is equal to the product of their individual probabilities: \[ P(A \cap B) = P(A) \cdot P(B) \] This condition indicates that knowing the outcome of one event does not provide any information about the outcome of the other. Independence is a powerful concept because it allows for simplifications in the analysis of complex systems by decomposing them into simpler, unrelated parts.</p>
+
+	<p>An intuitive analogy can help illustrate this concept. Imagine flipping two fair coins. The outcome of one flip does not affect the outcome of the other, as each coin flip is an independent event with a probability of heads or tails equal to  \(0.5\). Therefore, the probability of both coins landing on heads is the product of the individual probabilities:  \[P(\text{Heads on coin 1 and coin 2}) = 0.5 \times 0.5 = 0.25 \] This calculation would be impossible if the events were dependent, as the outcome of one flip would change the likelihood of the other. In more complex cases, such as the independence of certain random variables in a probabilistic model, the same principle applies but requires careful verification of the formal product rule.</p>
+	<p>The formal definitions in probability theory generalize this idea to accommodate multiple events and variables. For instance, in the context of random variables \(X\) and \(Y\), they are independent if the joint probability distribution can be decomposed into the product of their marginal distributions: \[ P(X = x, Y = y) = P(X = x) \cdot P(Y = y) \] This can also extend to conditional probabilities; two events \(A\) and \(B\) are conditionally independent given a third event \(C\) if \[P(A \cap B | C) = P(A | C) \cdot P(B | C) \] This conditional independence is especially important in fields such as machine learning and Bayesian networks, where variables are often dependent on a common factor, and understanding the independent relationships simplifies modeling and analysis.</p>
+	<p>In practical applications, the assumption of independence allows statisticians to break down complex probability calculations into simpler, more manageable components. For example, in sampling, assuming that each sample is independent of others makes calculating the overall probability distribution much easier and more efficient. However, in real-world scenarios, verifying true independence can be challenging, as hidden dependencies might exist. Thus, while independence is a valuable theoretical tool, careful validation in practice is essential to ensure accurate results.</p>
+
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.js"></script>
+
+	<h2>SDE simulator refined</h2>
+
+	<div>
+		<canvas id="secondChart" width="300" height="500"></canvas>
+	</div>
+
+	<p>&nbsp;</p>
+
+	<form action="">
+		<label for="n_Value">N (Servers)</label>
+		<input id="n_Value" type="number" value="10" min="1" max="100" name="n Value" required placeholder="Insert N value (Servers)">
+		<label for="m_Value">M (Hackers)</label>
+		<input id="m_Value" type="number" value="5" min="1" max="100" name="m Value"  required placeholder="Insert M value (Hackers)">
+		<label for="p_Value">P (Probability)</label>
+		<input id="p_Value" type="number" value="0.5" min="0.01" max="1.00" name="p Value" required step="0.01" placeholder="Insert P value (Probability)">
+		<label for="t_Value">T (Time)</label>
+		<input id="t_Value" type="number" value="10" min="1" max="100" name="t Value" required placeholder="Insert T value (Time Step)">
+		<label for="l_Value">L (Lambda)</label>
+		<input id="l_Value" type="number" value="10" min="1" max="100" name="l Value" required placeholder="Insert L value (Lambda)">
+		<label for="dt_Value">dt (Interval)</label>
+		<input id="dt_Value" type="number" value="10" min="1" max="100" name="dt Value" required placeholder="Insert dt value (dt Interval)">
+		<input type="submit" value="Simulate">
+	</form>
+
+	<script>
+		// Reference the canvas element where the chart will be drawn
+		const ctxSecond = document.getElementById('secondChart');
+	</script>
+
+	<script>
+		let chartSecondInstance = null;
+
+		let globalData = [];
+		let halfGlobalData = [];
+
+		const defaultN = 20;  // Default number of servers
+		const defaultM = 10;  // Default number of attackers
+		const defaultP = 0.5; // Default probability
+		const defaultT = 10;  // Default time frame
+		const defaultL = 10;  // Default lambda
+		const defaultdt = 10; // Default dt
+	
+		function generateSecondChart(totalServers, probability, attackers, timeFrame, delta, lambda) {
+			// Fetch input values from the form
+			const n = totalServers;
+			const m = attackers;   // Number of hackers
+			const p = probability; // Probability of successful attack
+			const T = timeFrame; // Total time for simulation
+			const L = lambda;
+			const dt = 1 / delta;
+			const sqrtDt = Math.sqrt(dt);
+			const steps = Math.floor(T / dt);
+			
+			// Initialize data arrays
+			const time = [];
+			const positions = Array(m).fill(0).map(() => [0]); // Array of positions for each hacker
+			let maxTime = 0;
+	
+			// Simulate the hacking attempts
+			for (let i = 1; i <= steps; i++) {
+				const currentTime = i * dt;
+				time.push(currentTime);
+	
+				// Each hacker attempts to penetrate servers independently
+				for (let j = 0; j < m; j++) {
+					// Check if an attack happens in this time interval
+					if (Math.random() < L * dt) {
+						// Random walk jump with probability `p`
+						const jump = Math.random() < p ? (Math.random() < 0.5 ? sqrtDt : -sqrtDt) : 0;
+						positions[j].push(positions[j][positions[j].length - 1] + jump);
+					} else {
+						// No attack, retain last position
+						positions[j].push(positions[j][positions[j].length - 1]);
+					}
+				}
+				maxTime = currentTime;
+			}
+	
+			// If an existing chart exists, destroy it to avoid overlap
+			if (chartSecondInstance) {
+				chartSecondInstance.destroy();
+			}
+	
+			// Prepare datasets for each hacker
+			const datasets = positions.map((position, index) => ({
+				label: `Hacker ${index + 1}`,
+				data: time.map((t, k) => ({ x: t, y: position[k] })),
+				borderColor: getRandomColor(),
+				borderWidth: 1,
+				pointRadius: 0
+			}));
+	
+			// Plotting the results with Chart.js
+			const ctxSecond = document.getElementById("secondChart").getContext("2d");
+			const config = {
+				type: 'line',  // Line chart for visualization.
+				data: { datasets },  // Data contains all the datasets created above.
+				options: {
+					interaction: { intersect: false },  // Avoid highlighting intersections between lines.
+					legend: {
+						display: false,  // Display the legend with dataset labels.
+					},
+					scales: {
+						// Configure the x-axis.
+						xAxes: [{
+							type: 'linear', beginAtZero: true, max: maxTime,  // X-axis limits.
+							ticks: { autoSkip: false, stepSize: dt, max: maxTime }  // Tick marks on x-axis.
+						}],
+						// Configure the y-axis.
+						yAxes: [{
+							type: 'linear', beginAtZero: true, stepSize: 1, 
+							ticks: { autoSkip: false }
+						}]
+					},
+					maintainAspectRatio: false  // Allow the chart to adjust its size dynamically.
+				}
+			};
+			// Create the chart instance.
+			chartSecondInstance = new Chart(ctxSecond, config);
+		}
+	
+		// Helper function to generate random color for each hacker
+		function getRandomColor() {
+			const letters = '0123456789ABCDEF';
+			let color = '#';
+			for (let i = 0; i < 6; i++) {
+				color += letters[Math.floor(Math.random() * 16)];
+			}
+			return color;
+		}
+
+		// Function to handle the form submission
+		document.querySelector('form').addEventListener('submit', function(event) {
+			// Prevent the default form submission
+			event.preventDefault();
+
+			// Reset charts and globalData before new simulation
+			globalData = [];
+			halfGlobalData = [];
+
+			// Get the values of n (total servers) and p (penetration probability) from the input fields
+			const n = parseInt(document.getElementById('n_Value').value);
+			const p = parseFloat(document.getElementById('p_Value').value);
+			const m = parseInt(document.getElementById('m_Value').value);
+			const t = parseInt(document.getElementById('t_Value').value);
+			const l = parseInt(document.getElementById('l_Value').value);
+			const dt = parseInt(document.getElementById('dt_Value').value);
+
+
+			// Generate an array of probabilities for each attacker
+			const probabilities = Array(m).fill(p);
+
+			ctxSecond.getContext('2d').clearRect(0, 0, ctxSecond.width, ctxSecond.height);  // Clear the canvas
+			generateSecondChart(n, p, m, t, dt, l);  // Generate the chart with the new parameters
+		});
+
+		window.onload = function() {
+			// Set default values for inputs
+			document.getElementById('n_Value').value = defaultN;
+			document.getElementById('m_Value').value = defaultM;
+			document.getElementById('p_Value').value = defaultP;
+			document.getElementById('t_Value').value = defaultT;
+			document.getElementById('l_Value').value = defaultL;
+			document.getElementById('dt_Value').value = defaultdt;
+		
+			// Generate the charts using the default values
+			const probabilities = Array(defaultM).fill(defaultP);
+		
+			// Clear previous content
+			ctxSecond.getContext('2d').clearRect(0, 0, ctxSecond.width, ctxSecond.height);  
+			generateSecondChart(defaultN, defaultP, defaultM, defaultT, defaultdt, defaultL);
+		};
+	</script>
+
+	<img src="assets/hmwrk4/fourthFirst.png" alt="" width="1172" height="620">
+
+	<p>
+		The function generateSecondChart is designed to simulate a series of independent hacking attempts over a defined time period. The input parameters include the total number of servers (totalServers), the probability of a successful hack (probability), the number of hackers (attackers), the total time frame for the simulation (timeFrame), the granularity of time intervals (delta), and a parameter representing the frequency of hacking attempts (lambda). These inputs help define the structure and behavior of the simulation, where each hacker can attempt to breach a server over time.</p>
+	<p>
+		Within the function, several key values are calculated based on these parameters. For instance, dt represents the size of each time step, computed as the inverse of delta. sqrtDt is then calculated as the square root of dt, used later to determine jump sizes in a random walk pattern. The steps variable defines the total number of time intervals, calculated by dividing the time frame (T) by dt. The arrays time and positions are initialized, where time will store time values, and positions is a multi-dimensional array to track each hacker's position (i.e., the number of servers penetrated) over time.</p>
+	<p>
+		The core of the simulation is a loop iterating over each time step. For each step, currentTime is calculated and added to the time array. Each hacker then attempts a breach based on a random condition governed by lambda. If a breach occurs, the hacker's position is updated in a random walk pattern using the probability p to determine the direction and size of the “jump.” If no breach occurs, the hacker's position remains the same. After all time steps, maxTime reflects the final time value in the simulation.
+	</p>
+</body>
