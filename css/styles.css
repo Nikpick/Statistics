@@ -5,9 +5,17 @@ body {
 	margin-top: 30px;
 	background: rgb(255, 255, 255);
     text-align: justify;
+	font-family: 'MyCustomFont', sans-serif;
 }
 
 .canvas-container {
 	margin-bottom: 400px;
 	text-align: justify;
+}
+
+@font-face {
+    font-family: 'MyCustomFont';
+    src: url('/assets/fonts/cmunrm.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
 }
