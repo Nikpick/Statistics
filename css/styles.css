@@ -1,21 +1,21 @@
-body {
-	margin-left: 450px;
-	margin-right: 450px;
-	margin-bottom: 200px;
-	margin-top: 30px;
-	background: rgb(255, 255, 255);
-    text-align: justify;
-	font-family: 'MyCustomFont', sans-serif;
-}
-
-.canvas-container {
-	margin-bottom: 400px;
-	text-align: justify;
-}
-
 @font-face {
     font-family: 'MyCustomFont';
     src: url('/assets/fonts/cmunrm.ttf') format('truetype');
     font-weight: normal;
     font-style: normal;
+}
+
+body {
+    margin-left: 20%;  /* 450px would be about 20% of 1000px */
+    margin-right: 20%; /* Same as left margin for centering */
+    margin-bottom: 10%; /* 200px would be about 10% of 1000px */
+    margin-top: 3%;    /* 30px would be about 3% of 1000px */
+    background: rgb(255, 255, 255);
+    text-align: justify;
+    font-family: 'MyCustomFont';
+}
+
+.canvas-container {
+	margin-bottom: 400px;
+	text-align: justify;
 }
