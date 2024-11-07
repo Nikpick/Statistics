@@ -165,9 +165,7 @@ function generateSixthChart(totalServers, probabilities, timeFrame, delta, lambd
 	};
 
 	// Create the chart instance.
-	if ( ! chartSixthInstance ) {
-		chartSixthInstance = new Chart(ctx, config);
-	}
+	chartSixthInstance = new Chart(ctx, config);
 }
 
 function generateSeventhChart(totalServers, attackersData) {

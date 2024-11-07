@@ -95,10 +95,9 @@ function generateThirdChart(totalServers, probabilities, timeFrame) {
             borderWidth: 1,
             radius: 0.5,
             data: data,
+            hidden: false
         });
     });
-
-
 
     datasets.push({
         label: 'Successful Attacks (Relative)',
@@ -106,6 +105,7 @@ function generateThirdChart(totalServers, probabilities, timeFrame) {
         borderWidth: 5,
         radius: 4,
         data: relativeFreq.map((y, x) => ({ x, y })),
+        showInLegend: true
     });
     datasets.push({
         label: 'Successful Attacks (Absolute)',
@@ -113,6 +113,7 @@ function generateThirdChart(totalServers, probabilities, timeFrame) {
         borderWidth: 5,
         radius: 4,
         data: successfulAttacks.map((y, x) => ({ x, y })),
+        showInLegend: true
     });
     datasets.push({
         label: 'Mean of Successful Attacks',
@@ -120,6 +121,7 @@ function generateThirdChart(totalServers, probabilities, timeFrame) {
         borderWidth: 5,
         radius: 4,
         data: means.map((y, x) => ({ x, y })),
+        showInLegend: true
     });
     datasets.push({
         label: 'Variance of Successful Attacks',
@@ -127,6 +129,7 @@ function generateThirdChart(totalServers, probabilities, timeFrame) {
         borderWidth: 5,
         radius: 4,
         data: variances.map((y, x) => ({ x, y })),
+        showInLegend: true
     });
 
 	// Get the context (2D rendering context) of the canvas element to draw the chart
@@ -165,9 +168,8 @@ function generateThirdChart(totalServers, probabilities, timeFrame) {
         }
     };
 
-    if ( ! chartThirdInstance ) {
-        chartThirdInstance = new Chart(ctx, config);
-    }
+    chartThirdInstance = new Chart(ctx, config);
+
 }
 
 function generateFourthChart(totalServers, attackersData) {
@@ -343,7 +345,7 @@ function generateChartForHW2(n, m, p, t) {
 
 	// Generate an array of probabilities for each attacker
 	const probabilities = Array(m).fill(p);
-
+    
 	generateThirdChart(n, probabilities, t);  // Generate the chart with the new parameters
 	generateFourthChart(n, halfGlobalSecondData);
 	generateFifthChart(n, globalSecondData);
