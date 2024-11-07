@@ -1,0 +1,389 @@
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Homework #5</title>
+	<link rel="stylesheet" href="css/styles.css">
+	<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+</head>
+
+<body>
+	<a href="index.html">Home</a>
+	<h1>Statistics - Homework #5 [Y.2024-2025]</h1>
+	<h2>Cauchy-Schwarz inequality</h2>
+	<p>
+		Let
+		\[
+		p(t) = \|t \vec{y} - \vec{x}\|^2
+		\]
+	</p>
+	<p>
+		Since there's an absolute value, it must be greater than or equal to 0:
+		\[
+		p(t) = \|t \vec{y} - \vec{x}\|^2 \geq 0
+		\]
+	</p>
+
+	<p>
+		Expanding p(t) using the dot product:
+		\[
+		p(t) = (t \vec{y} - \vec{x}) \cdot (t \vec{y} - \vec{x}) \geq 0
+		\]
+		\[
+		p(t) = t^2 (\vec{y} \cdot \vec{y}) - 2t (\vec{x} \cdot \vec{y}) + (\vec{x} \cdot \vec{x}) \geq 0
+		\]
+	</p>
+
+	<p>
+		Let's substitute terms for simplicity:
+		\[
+		p(t) = t^2\underbrace{(\vec{y} \cdot \vec{y})}_{\text{a}} + t\underbrace{(-2 \vec{x} \cdot \vec{y})}_{\text{b}}
+		+ \underbrace{(\vec{x} \cdot \vec{x})}_{\text{c}} \geq 0
+		\]
+	</p>
+	<p>
+		So,
+		\[
+		p(t) = at^2 + bt + c \geq 0
+		\]
+	</p>
+
+	<p>
+		The minimum value of this quadratic function occurs at \(t = -\frac{b}{2a}\).
+	</p>
+
+	<p>
+		Substitute \(t = -\frac{b}{2a}\):
+		\[
+		p\left(-\frac{b}{2a}\right) = a \left(-\frac{b}{2a}\right)^2 + b \left(-\frac{b}{2a}\right) + c \geq 0
+		\]
+		\[
+		p\left(-\frac{b}{2a}\right) = a \frac{b^2}{4a^2} + b \left(-\frac{b}{2a}\right) + c \geq 0
+		\]
+		\[
+		p\left(-\frac{b}{2a}\right) = \frac{b^2}{4a} - \frac{b^2}{2a} + c \geq 0
+		\]
+	</p>
+
+	<p>
+		Now, simplify without p(t):
+		\[
+		\frac{b^2}{4a} - \frac{b^2}{2a} + c \geq 0
+		\]
+	</p>
+
+	<p>
+		Multiply by 4a:
+		\[
+		b^2 - 2b^2 + 4ac \geq 0
+		\]
+		\[
+		-b^2 + 4ac \geq 0
+		\]
+		\[
+		4ac \geq b^2
+		\]
+	</p>
+
+	<p>
+		De-substitute back:
+		\[
+		p(t) = t^2\underbrace{(\vec{y} \cdot \vec{y})}_{\text{a}} + t\underbrace{(-2 \vec{x} \cdot \vec{y})}_{\text{b}}
+		+ \underbrace{(\vec{x} \cdot \vec{x})}_{\text{c}} \geq 0
+		\]
+	</p>
+
+	<p>
+		Then:
+		\[
+		4 (\vec{y} \cdot \vec{y})(\vec{x} \cdot \vec{x}) \geq (-2 \vec{x} \cdot \vec{y})^2
+		\]
+	</p>
+
+	<p>
+		Using the identity \(\vec{v} \cdot \vec{v} = \|\vec{v}\|^2\):
+		\[
+		4 \|\vec{y}\|^2 \|\vec{x}\|^2 \geq (-2 \vec{x} \cdot \vec{y})^2
+		\]
+	</p>
+
+
+	<p>
+		Applying \((f(x))^2 = (|f(x)|)^2 (where f(x) \in \mathbb{R})\):
+		\[
+		4 \|\vec{y}\|^2 \|\vec{x}\|^2 \geq (|-2 \vec{x} \cdot \vec{y}|)^2
+		\]
+	</p>
+
+	<p>
+		Since both sides are non-negative, we can take the square root:
+		\[
+		2 \|\vec{y}\| \|\vec{x}\| \geq | -2 \vec{x} \cdot \vec{y} |
+		\]
+	</p>
+
+	<p>
+		Simplify to:
+		\[
+		2 \|\vec{y}\| \|\vec{x}\| \geq 2 |\vec{x} \cdot \vec{y}|
+		\]
+	</p>
+
+	<p>
+		Thus:
+		\[
+		\|\vec{y}\| \|\vec{x}\| \geq |\vec{x} \cdot \vec{y}|
+		\]
+	</p>
+
+	<p>
+		This completes the proof of the Cauchy-Schwarz inequality.
+	</p>
+
+	<h2>Independence and Uncorrelation: Key Differences</h2>
+
+	<p>
+		Independence and uncorrelation are two fundamental concepts in probability and statistics that often get
+		confused but are conceptually distinct.
+	</p>
+
+	<p>
+	<ol>
+		<li><b>Independence:</b> Two random variables \(X\) and \(Y\) are considered independent if the occurrence of
+			one provides no information about the occurrence of the other. Mathematically, \(X\) and \(Y\) are
+			independent if their joint probability distribution is the product of their marginal distributions, i.e.,
+			\(P(X \cap Y) = P(X) \cdot P(Y)\) . In terms of expected values, \(X\) and \(Y\) are independent if
+			\[
+			\mathbb{E}[f(X) g(Y)] = \mathbb{E}[f(X)] \cdot \mathbb{E}[g(Y)]
+			\]
+			for any functions \(f\) and \(g\). Independence implies a much stronger relationship, as it not only
+			suggests that the variables don't move together but also that one variable doesn't influence or predict the
+			distribution of the other in any way.</li>
+		<li><b>Uncorrelation:</b> Uncorrelation, on the other hand, is a weaker condition. Two random variables \(X\)
+			and \(Y\) are uncorrelated if their covariance
+			\[
+			\operatorname{Cov}(X, Y) = \mathbb{E}[(X - \mathbb{E}[X])(Y - \mathbb{E}[Y])]
+			\]
+			is zero. This means that their linear relationship is absent, i.e., there is no linear association between
+			\(X\) and \(Y\). However, uncorrelation does not rule out all forms of dependence. For instance, \(X\) and
+			\(Y\) could still have a nonlinear dependency, meaning that knowing one variable could still provide
+			information about the other, even if it does not affect the mean behavior of the other in a linear way.</li>
+	</ol>
+	</p>
+
+	<h3>Conceptual Differences</h3>
+	<p>
+	<ul>
+		<li><b>Scope of Relationship</b>: Independence addresses a complete absence of dependency, implying that all
+			aspects of one variable are uninfluenced by the other. Uncorrelation, however, only addresses linear
+			dependence; two uncorrelated variables might still have higher-order dependencies.</li>
+		<li><b>Implications</b>: If two variables are independent, they are also uncorrelated (since no relationship,
+			including a linear one, exists). However, the converse does not hold. Variables can be uncorrelated but
+			still exhibit a non-linear relationship. A classic example is the pair \(X\) and \(Y = X^2\), where \(X\)
+			and \(Y\) are uncorrelated (since \(\mathbb{E}[X \cdot Y] = 0)\)but clearly not independent, as \(Y\) is
+			deterministically related to \(X\).</li>
+	</ul>
+	</p>
+
+
+
+	<h3>Measures of Independence and Uncorrelation</h3>
+
+	<ul>
+		<li><b>Covariance and Correlation:</b> Uncorrelation is commonly measured through the covariance or, more
+			practically, the correlation coefficient. The correlation coefficient \(\rho_{X,Y} =
+			\frac{\operatorname{Cov}(X, Y)}{\sigma_X \sigma_Y}\) normalizes covariance, making it easier to assess the
+			strength and direction of a linear relationship between \(X\) and \(Y\). A zero correlation implies
+			uncorrelation but not necessarily independence.</li>
+		<li><b>Mutual Information:</b> Mutual information is often used to measure independence. Unlike correlation,
+			mutual information can capture all forms of dependence—linear and non-linear. If the mutual information
+			between two variables is zero, they are truly independent. Mutual information is especially valuable when
+			exploring relationships that go beyond simple linear dependencies.</li>
+	</ul>
+
+	<p>While uncorrelation and independence are related concepts, they differ in scope and implications. Uncorrelation
+		is limited to the absence of linear association, while independence implies a broader, all-encompassing lack of
+		dependency. Covariance and correlation provide measures of uncorrelation, whereas more comprehensive measures
+		like mutual information are required to gauge independence accurately.</p>
+
+	<h2>Unified Simulation Framework</h2>
+
+
+
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.js"></script>
+
+
+	<label for="homeworkSelector">Select Homework:</label>
+	<select id="homeworkSelector">
+		<option value="1">Homework 1</option>
+		<option value="2">Homework 2</option>
+		<option value="3">Homework 3</option>
+		<option value="4">Homework 4</option>
+	</select>
+
+	<!-- Unified Form -->
+	<form id="simulationForm">
+		<div data-homework="1 2 3 4">
+			<label for="n_Value">N (Servers)</label>
+			<input id="n_Value" type="number" value="10" min="1" max="100" required>
+			<label for="m_Value">M (Hackers)</label>
+			<input id="m_Value" type="number" value="5" min="1" max="100" required>
+			<label for="p_Value">P (Probability)</label>
+			<input id="p_Value" type="number" value="0.5" min="0.01" max="1.00" step="0.01" required>
+		</div>
+		<div data-homework="2 3 4">
+			<label for="t_Value">T (Time)</label>
+			<input id="t_Value" type="number" value="10" min="1" max="100">
+		</div>
+		<div data-homework="3 4">
+			<label for="l_Value">L (Lambda)</label>
+			<input id="l_Value" type="number" value="10" min="1" max="100">
+			<label for="dt_Value">dt (Interval)</label>
+			<input id="dt_Value" type="number" value="10" min="1" max="100">
+		</div>
+		<input type="submit" value="Simulate">
+	</form>
+
+	<div class="canvas-container">
+		<canvas id="myChart" width="1" height="1"></canvas>
+		<canvas id="secondChart" width="1" height="1"></canvas>
+		<canvas id="thirdChart" width="1" height="1"></canvas>
+		<canvas id="fourthChart" width="1" height="1"></canvas>
+
+	</div>
+
+
+	<script>
+		// Reference the canvas element where the chart will be drawn
+		const ctx = document.getElementById('myChart');
+		const ctxSecond = document.getElementById('secondChart');
+		const ctxThird = document.getElementById('thirdChart');
+		const ctxFourth = document.getElementById('fourthChart');
+
+	</script>
+
+	<script type="module">
+
+		// Cache elements
+		const homeworkSelector = document.getElementById('homeworkSelector');
+		const form = document.getElementById('simulationForm');
+		const myChart = document.getElementById('myChart');
+		const secondChart = document.getElementById('secondChart');
+		const thirdChart = document.getElementById('thirdChart');
+		const fourthChart = document.getElementById('fourthChart');
+
+
+		// Function to update form visibility based on homework selection
+		function updateFormVisibility() {
+			const selectedHomework = homeworkSelector.value;
+			document.querySelectorAll('[data-homework]').forEach(element => {
+				const homeworkList = element.getAttribute('data-homework').split(' ');
+				element.style.display = homeworkList.includes(selectedHomework) ? '' : 'none';
+			});
+		}
+
+		// Initial visibility update
+		updateFormVisibility();
+
+		// Update visibility on homework change
+		homeworkSelector.addEventListener('change', updateFormVisibility);
+
+		let chartInstance = null;
+		let chartSecondInstance = null;
+		let globalData = [];
+
+		let chartThirdInstance = null;
+		let chartFourthInstance = null;
+		let chartFifthInstance = null;
+		let globalSecondData = [];
+		let halfGlobalSecondData = [];
+
+		let chartSixthInstance = null;
+		let chartSeventhInstance = null;
+		let chartEighthInstance = null;
+		let globalThirdData = [];
+		let halfGlobalThirdData = [];
+
+		let chartNinethInstance = null;
+		let globalFourthData = [];
+
+		// Event listener for form submission
+		form.addEventListener('submit', async function (event) {
+			event.preventDefault();  // Prevent default form submission
+
+			// Get the selected homework
+			const selectedHomework = homeworkSelector.value;
+
+			// Retrieve form values
+			const n = parseInt(document.getElementById('n_Value').value);
+			const m = parseInt(document.getElementById('m_Value').value);
+			const p = parseFloat(document.getElementById('p_Value').value);
+			const t = parseInt(document.getElementById('t_Value').value) || null;
+			const l = parseInt(document.getElementById('l_Value').value) || null;
+			const dt = parseInt(document.getElementById('dt_Value').value) || null;
+
+			// Clear the chart canvas before each simulation
+			const ctx = myChart.getContext('2d');
+			ctx.clearRect(0, 0, myChart.width, myChart.height);
+			const ctxSecond = secondChart.getContext('2d');
+			ctxSecond.clearRect(0, 0, secondChart.width, secondChart.height);
+			const ctxThird = thirdChart.getContext('2d');
+			ctxThird.clearRect(0, 0, thirdChart.width, thirdChart.height);
+			const ctxFourth = fourthChart.getContext('2d');
+			ctxFourth.clearRect(0, 0, fourthChart.width, fourthChart.height);
+
+
+			// Call the appropriate homework function
+			switch (selectedHomework) {
+				case '1':
+					ctx.clearRect(0, 0, ctx.width, ctx.height);
+					ctxSecond.clearRect(0, 0, ctxSecond.width, ctxSecond.height);
+					ctxThird.clearRect(0, 0, ctxThird.width, ctxThird.height);
+					ctxFourth.clearRect(0, 0, ctxFourth.width, ctxFourth.height);
+
+
+					generateChartForHW1(n, m, p);
+					break;
+					
+				case '2':
+					ctx.clearRect(0, 0, ctx.width, ctx.height);
+					ctxSecond.clearRect(0, 0, ctxSecond.width, ctxSecond.height);
+					ctxThird.clearRect(0, 0, ctxThird.width, ctxThird.height);
+					ctxFourth.clearRect(0, 0, ctxFourth.width, ctxFourth.height);
+
+
+					generateChartForHW2(n, m, p, t);
+					break;
+
+				case '3':
+					ctx.clearRect(0, 0, ctx.width, ctx.height);
+					ctxSecond.clearRect(0, 0, ctxSecond.width, ctxSecond.height);
+					ctxThird.clearRect(0, 0, ctxThird.width, ctxThird.height);
+					ctxFourth.clearRect(0, 0, ctxFourth.width, ctxFourth.height);
+
+
+					generateChartForHW3(n, m, p, t, dt, l);
+					break;
+
+				case '4':
+					ctx.clearRect(0, 0, ctx.width, ctx.height);
+					ctxSecond.clearRect(0, 0, ctxSecond.width, ctxSecond.height);
+					ctxThird.clearRect(0, 0, ctxThird.width, ctxThird.height);
+					ctxFourth.clearRect(0, 0, ctxFourth.width, ctxFourth.height);
+
+
+					generateChartForHW4(n, p, m, t, dt, l);
+					break;
+			}
+		});
+
+	</script>
+
+	<script src="./simulations/hw1.js"></script>
+	<script src="./simulations/hw2.js"></script>
+	<script src="./simulations/hw3.js"></script>
+	<script src="./simulations/hw4.js"></script>
+
+</body>
