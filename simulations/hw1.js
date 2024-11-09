@@ -190,7 +190,7 @@ function generateSecondChart(totalServers, attackersData) {
 	chartSecondInstance = new Chart(ctxSecond, config);
 }
 
-function generateChartForHW1(n, m, p) {
+function generateChartForHW1(n, m, p, ctx, ctxSecond) {
 	// Reset charts and globalData before new simulation
 	globalData = [];
 

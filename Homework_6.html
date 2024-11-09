@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Homework #6</title>
+	<link rel="stylesheet" href="css/styles.css">
+	<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.js"></script>
+</head>
+<body>
+	<a href="index.html">Home</a>
+	<h1>Statistics - Homework #6 [Y.2024-2025]</h1>
+
+<h3>Part 1: The Relationship between the Integral and the Antiderivative</h3>
+<p>
+If f is a continuous real-valued function on the interval \([a, b]\) and \(F\) is defined by
+\[
+F(x) = \int_a^x f(t) \, dt
+\]
+for \(x\)in \([a, b]\), then \(F\) is differentiable on \((a, b)\), and
+\[
+F{\prime}(x) = f(x)
+\]
+In other words, this part states that if you define a function  \(F(x)\) as the integral of \(f(t)\) from a to \(x\), then the derivative of  \(F(x)\) is the original function  \(f(x)\) . This shows that integration can be “undone” by differentiation.</p>
+
+<h3>Part 2: Evaluation of the Integral Using Antiderivatives</h3>
+<p>
+If \(f\) is continuous on \([a, b]\), and \(F\) is any antiderivative of \(f\)on \([a, b]\) (meaning \(F'=f)\), then:
+\[
+\int_a^b f(x) \, dx = F(b) - F(a)
+\]
+This part tells us that to find the integral of  \(f(x)\) from \(a\) to \(b\) , we only need to find an antiderivative \(F\) of \(f\)and evaluate it at the endpoints. This greatly simplifies the process of finding definite integrals.</p>
+
+<h3>1. Density Functions</h3>
+<p>
+A density function describes the likelihood of a random variable taking on a specific value or falling within a range of values. The form of the density function depends on whether the random variable is discrete or continuous:
+<ul>
+	<li><b>Probability Mass Function (PMF)</b>: For discrete random variables, the probability mass function \(P(X=x)\) assigns a probability to each possible value of the random variable \(X\) . The PMF is a discrete function where each value represents the probability of a specific outcome. For example, if \(X\) represents a fair six-sided die roll, the PMF gives \(P(X=k)=\frac{1}{6}\) for \(k = 1, 2, 3, 4, 5, 6\).</li>
+	<li><b>Probability Density Function (PDF)</b>: For continuous random variables, the probability density function \(f(x)\) describes the relative likelihood of the variable near each value of \(x\). Unlike the PMF, the PDF doesn't directly give probabilities. Instead, probabilities are calculated over intervals, since the probability of any specific value in a continuous distribution is zero. For example, in a normal distribution with PDF \(f(x)=\frac{1}{\sqrt{2 \pi \sigma^2}}e^{-\frac{(x - \mu)^2}{2\sigma^2}}\),\(f(x)\) shows the likelihood density around each point \(x\).</p></li>
+</ul>
+
+<h3>2. Cumulative Distribution Functions (CDFs)</h3>
+
+<p>
+The cumulative distribution function (CDF) of a random variable \(X\) represents the probability that \(X\) will take on a value less than or equal to a specific point \(x\). For both discrete and continuous variables, the CDF is defined as:
+\[
+F(x) = P(X \leq x)
+\]
+This function accumulates the probabilities or densities from the lowest possible value up to \(x\). The CDF is a non-decreasing function that starts at zero (for the minimum possible value of \(X\) ) and asymptotically approaches one as x increases (for the maximum possible value of \(X\)).</p>
+<p>
+For discrete variables, the CDF is a step function because the probabilities are concentrated at discrete points. For continuous variables, the CDF is a smooth, continuous function that integrates the PDF:
+\[
+F(x) = \int_{-\infty}^x f(t) \, dt
+\]
+where \(f(t)\) is the PDF of \(X\).</p>
+
+<h3>Relationship between PDF and CDF</h3>
+<p>
+<ul>
+	<li>For continuous random variables, the PDF  \(f(x)\) is the derivative of the CDF  \(F(x)\) :
+		\[
+		f(x) = \frac{d}{dx} F(x)
+		\]
+		This is where the Fundamental Theorem of Calculus comes into play, as it relates the integral (CDF) and the derivative (PDF) for continuous distributions.</li>
+	<li>Conversely, the CDF  \(F(x)\) can be found by integrating the PDF:
+		\[
+		F(x) = \int_{-\infty}^x f(t) \, dt
+		\]</li>
+</ul>
+</p>
+
+<h3>The Fundamental Theorem of Calculus (Recap)</h3>
+<p>
+The Fundamental Theorem of Calculus states that if \(F(x)\) is the antiderivative (or integral) of a function \(f(x)\) over an interval, then:
+<ol>
+	<li><b>Part 1:</b> If \(f(x)\) is continuous over \([a, b]\) and we define \(F(x) = \int_a^x f(t)\), \(dt\), then \(F'(x)=f(x)\).
+		This tells us that the derivative of the integral of  \(f(x)\) with respect to \(x\)gives us back \(f(x)\).</li>
+	<li><b>Part 2:</b> For any continuous function \(f(x)\) over \([a, b]\) , we can find:
+		\[
+		\int_a^b f(x) \, dx = F(b) - F(a)
+		\]
+		This means that the definite integral of \(f(x)\) from \(a\) to \(b\) is the difference between the values of \(F(x)\), the antiderivative of \(f(x)\), at \(b\) and \(a\).</li>
+</ol> 
+</p>
+
+<h3>Density Functions and Cumulative Distribution Functions (CDFs)</h3>
+<p>
+In probability, for a continuous random variable \(X\):
+<ol>
+	<li>The probability density function (PDF), \(f(x)\), describes how the probability is distributed over the values of \(X\).</li>
+	<li>The cumulative distribution function (CDF), \(F(x)\), represents the probability that \(X\) will take a value less than or equal to \(x\). Thus:
+		\[
+		F(x) = P(X \leq x) = \int_{-\infty}^x f(t) \, dt
+		\]
+		Here, \(F(x)\) is an integral of \(f(t)\) from \(-\infty\) to \(x\), where \(f(t)\) is the PDF of \(X\).</li>
+</ol>
+</p>
+
+<h2>Relationship Using the Fundamental Theorem of Calculus</h2>
+<p>
+Now we can apply the Fundamental Theorem of Calculus to understand the connection between the CDF and PDF.
+<ol>
+	<li>CDF as an Integral of the PDF: By definition, the CDF \(F(x)\) of a continuous random variable \(X\) is the integral of its PDF from \(-\infty\) to \(x\):
+		\[
+		F(x) = \int_{-\infty}^x f(t) \, dt
+		\]
+		Here, the CDF  \(F(x)\) is an accumulated probability up to the point \(x\), which aligns with the concept of an integral. It represents the total probability of \(X\) being less than or equal to \(x\).</li>
+	<li>PDF as the Derivative of the CDF: According to Part 1 of the Fundamental Theorem of Calculus, if  \(F(x)\) is the integral of f(t) from \(-\infty\) to \(x\), then  \(F(x)\) is differentiable wherever  \(f(x)\) is continuous, and:
+		\[
+		F{\prime}(x) = f(x)
+		\]
+		This means that the derivative of the CDF \(F(x)\) with respect to \(x\) is precisely the PDF \(f(x)\) .
+		Intuitively, this tells us that the rate of change of the cumulative probability (CDF) at any given point \(x\)is given by the probability density (PDF) at that point. Therefore, \(f(x)\) indicates how quickly \(F(x)\) is “accumulating” probability around \(x\).</li>
+</ol>
+</p>
+
+<h3>Example: Standard Normal Distribution</h3>
+<p>
+For a standard normal random variable \(X\) with mean \(0\) and variance \(1\) , the PDF  \(f(x)\) is:
+\[
+f(x) = \frac{1}{\sqrt{2\pi}} e^{-x^2 / 2}
+\]
+The CDF \(F(x)\), defined as \(F(x)=\int_{-\infty}^x f(t)\), \(dt\), represents the probability that \(X\) will be less than or equal to \(x\).</p>
+<p>
+According to the Fundamental Theorem of Calculus:
+\[
+F{\prime}(x) = f(x) = \frac{1}{\sqrt{2\pi}} e^{-x^2 / 2}
+\]
+This shows that the derivative of the CDF \(F(x)\) with respect to \(x\) gives us the value of the PDF \(f(x)\) at that point.</p>
+
+<h1>Convergence of the empirical distribution</h1>
+
+	<label for="numFields">Enter number of fields (2-20): </label>
+	<input type="number" id="numFields" min="2" max="20" step="1">
+	<button onclick="createFields()">Create Fields</button>
+
+	<div id="inputContainer"></div>
+	<p id="sumStatus">Sum: 0.00</p>
+
+	<label for="numIterations">Enter number of iterations (1-1,000,000): </label>
+	<input type="number" id="numIterations" min="1" max="1000000" value="100">
+	<button id="generateGraphButton" onclick="generateGraph()" disabled>Generate Graph</button>
+
+	<div class="canvas-container">
+		<canvas id="myChart" width="600" height="400" style="display:none;"></canvas>
+	</div>
+
+	<script>
+		function getRandomColor() {
+			const letters = '0123456789ABCDEF';
+			let color = '#';
+			for (let i = 0; i < 6; i++) {
+				color += letters[Math.floor(Math.random() * 16)];
+			}
+			return color;
+		}
+
+		function createFields() {
+			const numFields = document.getElementById('numFields').value;
+
+			if (numFields < 2 || numFields > 20) {
+				alert("Please enter a number between 2 and 20.");
+				return;
+			}
+
+			const container = document.getElementById('inputContainer');
+			container.innerHTML = ""; // Clear previous input fields
+			document.getElementById('sumStatus').innerText = "Sum: 0.00";
+			document.getElementById('generateGraphButton').disabled = true;
+
+			for (let i = 0; i < numFields; i++) {
+				const input = document.createElement("input");
+				input.type = "number";
+				input.step = "0.01";
+				input.min = "0";
+				input.max = "100";
+				input.placeholder = `Probability ${i + 1}`;
+				input.oninput = validateSum;
+
+				container.appendChild(input);
+				container.appendChild(document.createElement("br"));
+			}
+		}
+
+		function validateSum() {
+			const inputs = document.querySelectorAll("#inputContainer input");
+			let sum = 0;
+
+			inputs.forEach(input => {
+				const value = parseFloat(input.value) || 0;
+				sum += value;
+			});
+
+			document.getElementById('sumStatus').innerText = "Sum: " + sum.toFixed(2);
+			document.getElementById('generateGraphButton').disabled = (sum.toFixed(2) !== "100.00");
+		}
+
+		let chartInstance = null;
+
+		// Function to update the mean recursively
+		function calculateMean(previousMean, newValue, count) {
+			return previousMean + (newValue - previousMean) / count;
+		}
+
+		// Function to update the variance recursively
+		function calculateVariance(previousVariance, previousMean, newMean, newValue, count) {
+			return previousVariance + (newValue - previousMean) * (newValue - newMean);
+		}
+
+		function generateGraph() {
+			const inputs = document.querySelectorAll("#inputContainer input");
+			const probabilities = Array.from(inputs).map(input => parseFloat(input.value) / 100 || 0);
+
+			const numIterations = parseInt(document.getElementById('numIterations').value, 10);
+			const seriesData = Array(probabilities.length).fill(0).map(() => [0]);
+
+			const means = Array(probabilities.length).fill(0);
+			const variances = Array(probabilities.length).fill(0);
+			const counts = Array(probabilities.length).fill(0);
+
+			for (let i = 1; i <= numIterations; i++) {
+				let cumulativeProbability = 0;
+				const randomValue = Math.random();
+				let jumpedIndex = -1;
+
+				for (let j = 0; j < probabilities.length; j++) {
+					cumulativeProbability += probabilities[j];
+					if (randomValue < cumulativeProbability && jumpedIndex === -1) {
+						const newValue = seriesData[j][seriesData[j].length - 1] + 1;
+						seriesData[j].push(newValue);
+						jumpedIndex = j;
+
+						counts[j]++;
+						const previousMean = means[j];
+						means[j] = calculateMean(means[j], newValue, counts[j]);
+						variances[j] = calculateVariance(variances[j], previousMean, means[j], newValue, counts[j]);
+					} else {
+						const lastValue = seriesData[j][seriesData[j].length - 1];
+						seriesData[j].push(lastValue);
+					}
+				}
+			}
+
+			const finalVariances = variances.map((variance, index) => variance / (counts[index] - 1));
+
+			console.log("Means:", means);
+			console.log("Variances:", finalVariances);
+
+			const maxY = Math.max(...seriesData.map(data => Math.max(...data)));
+
+			document.getElementById('myChart').style.display = 'block';
+			const ctx = document.getElementById('myChart').getContext('2d');
+
+			if (chartInstance) {
+				chartInstance.destroy();
+			}
+
+			chartInstance = new Chart(ctx, {
+				type: 'line',
+				data: {
+					labels: Array.from({ length: numIterations + 1 }, (_, i) => i),
+					datasets: seriesData.map((data, index) => ({
+						label: `Line ${index + 1} (Mean: ${means[index].toFixed(2)}, Variance: ${finalVariances[index].toFixed(2)})`,
+						data: data,
+						borderColor: getRandomColor(),
+						borderWidth: 1,
+						radius: 0.1,
+						fill: false,
+					})),
+				},
+				options: {
+					responsive: true,
+					scales: {
+						x: {
+							type: 'linear',
+							title: {
+								display: true,
+								text: 'Iterations',
+							},
+						},
+						y: {
+							beginAtZero: true,
+							suggestedMax: maxY + 1,
+							title: {
+								display: true,
+								text: 'Cumulative Jumps',
+							},
+						},
+					},
+				},
+			});
+		}
+	</script>
+</body>
+</html>
