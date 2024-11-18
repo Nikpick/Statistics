@@ -178,7 +178,7 @@
 	<div id="inputContainer"></div>
 	<button id="randomizeButton" onclick="randomizeFields()" style="display: none;">Randomize Fields</button>
 	<p id="sumStatus">Sum: 0.00</p>
-	
+
 
 	<label for="numIterations">Enter number of iterations (1-1,000,000): </label>
 	<input type="number" id="numIterations" min="1" max="1000000" value="100">
@@ -202,18 +202,18 @@
 
 		function createFields() {
 			const numFields = document.getElementById('numFields').value;
-		
+
 			if (numFields < 2 || numFields > 20) {
 				alert("Please enter a number between 2 and 20.");
 				return;
 			}
-		
+
 			const container = document.getElementById('inputContainer');
 			container.innerHTML = ""; // Clear previous input fields
 			document.getElementById('sumStatus').innerText = "Sum: 0.00";
 			document.getElementById('generateGraphButton').disabled = true;
 			document.getElementById('randomizeButton').style.display = 'inline'; // Show the randomize button
-		
+
 			for (let i = 0; i < numFields; i++) {
 				const input = document.createElement("input");
 				input.type = "number";
@@ -222,65 +222,83 @@
 				input.max = "100";
 				input.placeholder = `Probability ${i + 1}`;
 				input.oninput = validateSum;
-		
+
 				container.appendChild(input);
 				container.appendChild(document.createElement("br"));
 			}
 		}
-		
+
 		function randomizeFields() {
 			const inputs = document.querySelectorAll("#inputContainer input");
 			const numFields = inputs.length;
 			const randomValues = generateRandomProbabilities(numFields);
-		
+
 			inputs.forEach((input, index) => {
 				input.value = randomValues[index].toFixed(2);
 			});
-		
+
 			validateSum(); // Update the sum display and enable the button if valid
 		}
-		
+
 		function generateRandomProbabilities(numFields) {
 			// Step 1: Generate random values and normalize to sum to 100
 			let values = Array(numFields).fill(0).map(() => Math.random());
 			const sum = values.reduce((acc, val) => acc + val, 0);
 			values = values.map(val => (val / sum) * 100);
-		
+
 			// Step 2: Round each value to two decimal places
 			values = values.map(val => parseFloat(val.toFixed(2)));
-		
+
 			// Step 3: Adjust the last value to make the total sum exactly 100
 			const roundedSum = values.reduce((acc, val) => acc + val, 0);
 			const difference = 100 - roundedSum;
 			values[values.length - 1] += parseFloat(difference.toFixed(2));
-		
+
 			return values;
 		}
-		
+
 		function validateSum() {
 			const inputs = document.querySelectorAll("#inputContainer input");
 			let sum = 0;
-		
+
 			inputs.forEach(input => {
 				const value = parseFloat(input.value) || 0;
 				sum += value;
 			});
-		
+
 			document.getElementById('sumStatus').innerText = "Sum: " + sum.toFixed(2) + " should be 100";
 			document.getElementById('generateGraphButton').disabled = (sum.toFixed(2) !== "100.00");
 		}
 
 		let chartInstance = null;
 
-		// Function to update the mean recursively
-		function calculateMean(previousMean, newValue, count) {
-			return previousMean + (newValue - previousMean) / count;
-		}
+		// Recursive function to calculate mean and variance for an array
+		function computeMeanAndVariance(array, index = 0, count = 0, currentMean = 0, M2 = 0, means = [], variances = []) {
+			if (index >= array.length) {
+			  return { means, variances }; // Return the arrays of means and variances when all elements are processed.
+			}
+		
+			const value = array[index];
+		
+			if (!isNaN(value)) {
+                count++;
+                const delta = value - currentMean;
+                const newMean = currentMean + delta / count;
+                const delta2 = value - newMean;
+                const newM2 = M2 + delta * delta2;
 
-		// Function to update the variance recursively
-		function calculateVariance(previousVariance, previousMean, newMean, newValue, count) {
-			return previousVariance + (newValue - previousMean) * (newValue - newMean);
-		}
+                const variance = count < 2 ? 0 : newM2 / (count - 1); // Variance is only valid after 2 points.
+
+                means[index] = newMean;   // Store the current mean at this index.
+			    variances[index] = variance; // Store the current variance at this index.
+
+			  // Recursive call to process the next element in the array.
+            return computeMeanAndVariance(array, index + 1, count, newMean, newM2, means, variances);
+			}
+
+			// Skip non-numeric values and proceed to the next index.
+			return computeMeanAndVariance(array, index + 1, count, currentMean, M2, means, variances);
+        }
 
 		function generateGraph() {
 			const inputs = document.querySelectorAll("#inputContainer input");
@@ -288,10 +306,6 @@
 
 			const numIterations = parseInt(document.getElementById('numIterations').value, 10);
 			const seriesData = Array(probabilities.length).fill(0).map(() => [0]);
-
-			const means = Array(probabilities.length).fill(0);
-			const variances = Array(probabilities.length).fill(0);
-			const counts = Array(probabilities.length).fill(0);
 
 			// Array to store final counts for the bar chart
 			const finalCounts = Array(probabilities.length).fill(0);
@@ -308,11 +322,7 @@
 						seriesData[j].push(newValue);
 						jumpedIndex = j;
 
-						counts[j]++;
-						finalCounts[j] += 1;  // Increment final count for bar chart
-						const previousMean = means[j];
-						means[j] = calculateMean(means[j], newValue, counts[j]);
-						variances[j] = calculateVariance(variances[j], previousMean, means[j], newValue, counts[j]);
+						finalCounts[j] += 1; // Increment final count for bar chart
 					} else {
 						const lastValue = seriesData[j][seriesData[j].length - 1];
 						seriesData[j].push(lastValue);
@@ -320,10 +330,14 @@
 				}
 			}
 
-			const finalVariances = variances.map((variance, index) => variance / (counts[index] - 1));
+			// Compute mean and variance for each series using the recursive function
+			const results = seriesData.map(data => computeMeanAndVariance(data.slice(1))); // Exclude the initial value (0)
+
+			const means = results.map(results => results.means);
+			const variances = results.map(results => results.variances);
 
 			console.log("Means:", means);
-			console.log("Variances:", finalVariances);
+			console.log("Variances:", variances);
 
 			const maxY = Math.max(...seriesData.map(data => Math.max(...data)));
 
@@ -333,13 +347,15 @@
 			if (chartInstance) {
 				chartInstance.destroy();
 			}
+            console.log(means[1].length - 1)
+            console.log(variances.length - 1)
 
 			chartInstance = new Chart(ctx, {
 				type: 'line',
 				data: {
 					labels: Array.from({ length: numIterations + 1 }, (_, i) => i),
 					datasets: seriesData.map((data, index) => ({
-						label: `Line ${index + 1} (Mean: ${means[index].toFixed(2)}, Var: ${finalVariances[index].toFixed(2)})`,
+						label: `Line ${index + 1} (Mean: ${parseFloat(means[index][means[index].length - 1]).toFixed(2)}, Var: ${parseFloat(variances[index][variances[index].length - 1]).toFixed(2)})`,
 						data: data,
 						borderColor: getRandomColor(),
 						borderWidth: 1,
