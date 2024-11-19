@@ -15,7 +15,6 @@
 	<a href="index.html">Home</a>
 	<h1>Statistics - Homework #7 [Y.2024-2025]</h1>
 
-
 	<label for="numFields">Enter number of fields (2-20): </label>
 	<input type="number" id="numFields" min="2" max="20" step="1">
 	<button onclick="createFields()">Create Fields</button>
@@ -24,21 +23,15 @@
 	<button id="randomizeButton" onclick="randomizeFields()" style="display: none;">Randomize Fields</button>
 	<p id="sumStatus">Sum: 0.00</p>
 
-
-	<label for="numIterations">Enter number of iterations (1-1,000,000): </label>
+	<label for="sampleSize">Enter sample size (n): </label>
+	<input type="number" id="sampleSize" min="1" max="1000" value="20">
+	<div id="inputContainer"></div>
+	<label for="numIterations">Enter number of iterations (m): </label>
 	<input type="number" id="numIterations" min="1" max="1000000" value="100">
 	<button id="generateGraphButton" onclick="generateGraph()" disabled>Generate Graph</button>
 
-	<div id="inputContainer"></div>
-	<label for="numGraphs">Enter number of graphs (1-100): </label>
-	<input type="number" id="numGraphs" min="1" max="100" value="1">
-	<button id="generateAllGraphsButton" onclick="generateAllGraphs()" disabled>Generate All Graphs</button>
-	<div id="graphsContainer"></div>
-
-
 	<div class="canvas-container">
-		<canvas id="myChart" width="600" height="400" style="display:none;"></canvas>
-		<canvas id="finalDistributionChart" width="600" height="400" style="display:none;"></canvas>
+		<canvas id="meanVarianceChart" width="600" height="400" style="display:none;"></canvas>
 	</div>
 
 	<script>
@@ -63,7 +56,6 @@
 			container.innerHTML = ""; // Clear previous input fields
 			document.getElementById('sumStatus').innerText = "Sum: 0.00";
 			document.getElementById('generateGraphButton').disabled = true;
-			document.getElementById('generateAllGraphsButton').disabled = true;
 			document.getElementById('randomizeButton').style.display = 'inline'; // Show the randomize button
 
 			for (let i = 0; i < numFields; i++) {
@@ -93,19 +85,13 @@
 		}
 
 		function generateRandomProbabilities(numFields) {
-			// Step 1: Generate random values and normalize to sum to 100
 			let values = Array(numFields).fill(0).map(() => Math.random());
 			const sum = values.reduce((acc, val) => acc + val, 0);
 			values = values.map(val => (val / sum) * 100);
-
-			// Step 2: Round each value to two decimal places
 			values = values.map(val => parseFloat(val.toFixed(2)));
-
-			// Step 3: Adjust the last value to make the total sum exactly 100
 			const roundedSum = values.reduce((acc, val) => acc + val, 0);
 			const difference = 100 - roundedSum;
 			values[values.length - 1] += parseFloat(difference.toFixed(2));
-
 			return values;
 		}
 
@@ -120,302 +106,185 @@
 
 			document.getElementById('sumStatus').innerText = "Sum: " + sum.toFixed(2) + " should be 100";
 			document.getElementById('generateGraphButton').disabled = (sum.toFixed(2) !== "100.00");
-			document.getElementById('generateAllGraphsButton').disabled = (sum.toFixed(2) !== "100.00");
-		}
-
-		let chartInstance = null;
-
-		// Function to update the mean recursively
-		// Function to update the mean recursively
-		function calculateMean(previousMean, newValue, count) {
-			return previousMean + (newValue - previousMean) / count;
-		}
-
-		// Function to update the variance recursively
-		function calculateVariance(previousVariance, previousMean, newMean, newValue, count) {
-			return previousVariance + (newValue - previousMean) * (newValue - newMean);
 		}
 
 		function generateGraph() {
 			const inputs = document.querySelectorAll("#inputContainer input");
 			const probabilities = Array.from(inputs).map(input => parseFloat(input.value) / 100 || 0);
-
+		
 			const numIterations = parseInt(document.getElementById('numIterations').value, 10);
-			const seriesData = Array(probabilities.length).fill(0).map(() => [0]);
-
-			const means = Array(probabilities.length).fill(0);
-			const variances = Array(probabilities.length).fill(0);
-			const counts = Array(probabilities.length).fill(0);
-
-			// Array to store final counts for the bar chart
-			const finalCounts = Array(probabilities.length).fill(0);
-
-			for (let i = 1; i <= numIterations; i++) {
-				let cumulativeProbability = 0;
-				const randomValue = Math.random();
-				let jumpedIndex = -1;
-
-				for (let j = 0; j < probabilities.length; j++) {
-					cumulativeProbability += probabilities[j];
-					if (randomValue < cumulativeProbability && jumpedIndex === -1) {
-						const newValue = seriesData[j][seriesData[j].length - 1] + 1;
-						seriesData[j].push(newValue);
-						jumpedIndex = j;
-
-						counts[j]++;
-						finalCounts[j] += 1;  // Increment final count for bar chart
-						const previousMean = means[j];
-						means[j] = calculateMean(means[j], newValue, counts[j]);
-						variances[j] = calculateVariance(variances[j], previousMean, means[j], newValue, counts[j]);
-					} else {
-						const lastValue = seriesData[j][seriesData[j].length - 1];
-						seriesData[j].push(lastValue);
+			const sampleSize = parseInt(document.getElementById('sampleSize').value, 10);
+		
+			const valueMapping = probabilities.map((_, i) => i + 1); // Assign numbers to values
+			const meanValues = []; // Store mean for each iteration
+		
+			// Generate samples and calculate stats
+			for (let i = 0; i < numIterations; i++) {
+				const sample = [];
+				for (let j = 0; j < sampleSize; j++) {
+					const rand = Math.random();
+					let cumulativeProbability = 0;
+					for (let k = 0; k < probabilities.length; k++) {
+						cumulativeProbability += probabilities[k];
+						if (rand <= cumulativeProbability) {
+							sample.push(valueMapping[k]);
+							break;
+						}
 					}
 				}
+		
+				const sampleMean = sample.reduce((acc, val) => acc + val, 0) / sampleSize; // Mean of the sample
+				meanValues.push(sampleMean);
 			}
-
-			// Calculate the final variances (divide by count - 1 for sample variance)
-			const finalVariances = variances.map((variance, index) => variance / (counts[index] - 1));
-
-			console.log("Means:", means);
-			console.log("Variances:", finalVariances);
-
-			const maxY = Math.max(...seriesData.map(data => Math.max(...data)));
-
-			document.getElementById('myChart').style.display = 'block';
-			const ctx = document.getElementById('myChart').getContext('2d');
-
-			if (chartInstance) {
-				chartInstance.destroy();
-			}
-
-			chartInstance = new Chart(ctx, {
-				type: 'line',
-				data: {
-					labels: Array.from({ length: numIterations + 1 }, (_, i) => i),
-					datasets: seriesData.map((data, index) => ({
-						label: `Line ${index + 1} (Mean: ${means[index].toFixed(2)}, Var: ${finalVariances[index].toFixed(2)})`,
-						data: data,
-						borderColor: getRandomColor(),
-						borderWidth: 1,
-						radius: 0.1,
-						fill: false,
-					})),
-				},
-				options: {
-					responsive: true,
-					scales: {
-						x: {
-							type: 'linear',
-							title: {
-								display: true,
-								text: 'Iterations',
-							},
-						},
-						y: {
-							beginAtZero: true,
-							suggestedMax: maxY + 1,
-							title: {
-								display: true,
-								text: 'Cumulative Jumps',
-							},
-						},
-					},
-				},
-			});
-
-			// Expected frequencies based on input probabilities
-			const expectedCounts = probabilities.map(prob => prob * numIterations);
-			renderFinalDistributionChart(finalCounts, expectedCounts);
+		
+			// Calculate overall mean and variance of sample means
+			const overallMean = meanValues.reduce((acc, val) => acc + val, 0) / numIterations;
+			const variance =
+				meanValues.reduce((acc, val) => acc + Math.pow(val - overallMean, 2), 0) / numIterations;
+		
+			// Generate the first graph (line graph of means)
+			drawLineGraph(meanValues);
+		
+			// Generate the second graph (frequency distribution of rounded means)
+			drawFrequencyGraph(meanValues);
+		
+			// Display overall results below the second chart
+			displayOverallResults(overallMean, variance);
 		}
-
-		function renderFinalDistributionChart(finalCounts, expectedCounts) {
-			document.getElementById('finalDistributionChart').style.display = 'block';
-			const ctx = document.getElementById('finalDistributionChart').getContext('2d');
-
-			if (window.finalDistributionChartInstance) {
-				window.finalDistributionChartInstance.destroy();
+		
+		function drawLineGraph(meanValues) {
+			document.getElementById('meanVarianceChart').style.display = 'block';
+			const ctx = document.getElementById('meanVarianceChart').getContext('2d');
+		
+			if (window.meanVarianceChartInstance) {
+				window.meanVarianceChartInstance.destroy();
 			}
-
-			window.finalDistributionChartInstance = new Chart(ctx, {
-				type: 'bar',
+		
+			window.meanVarianceChartInstance = new Chart(ctx, {
+				type: 'line', // Line graph
 				data: {
-					labels: finalCounts.map((_, index) => `Line ${index + 1}`),
+					labels: Array.from({ length: meanValues.length }, (_, i) => i + 1), // X-axis: iteration index
 					datasets: [
 						{
-							label: 'Observed Distribution',
-							data: finalCounts,
-							backgroundColor: getRandomColor(),
+							label: 'Mean Values',
+							data: meanValues, // Y-axis: mean values
+							borderColor: 'rgba(75, 192, 192, 1)',
+							backgroundColor: 'rgba(75, 192, 192, 0.2)',
+							borderWidth: 2,
+							tension: 0.1, // Smooth lines
 						},
-						{
-							label: 'Expected Distribution',
-							data: expectedCounts,
-							backgroundColor: getRandomColor(),
-						}
-					]
+					],
 				},
 				options: {
 					responsive: true,
-					scales: {
-						y: {
-							beginAtZero: true,
-							title: {
-								display: true,
-								text: 'Counts',
-							}
-						}
-					}
-				}
-			});
-		}
-
-		function generateAllGraphs() {
-			const numGraphs = parseInt(document.getElementById('numGraphs').value, 10);
-			const numIterations = parseInt(document.getElementById('numIterations').value, 10);
-			const probabilities = Array.from(document.querySelectorAll("#inputContainer input"))
-				.map(input => parseFloat(input.value) / 100 || 0);
-
-			if (numGraphs < 1 || numGraphs > 100) {
-				alert("Please enter a number of graphs between 1 and 100.");
-				return;
-			}
-
-			const graphsContainer = document.getElementById('graphsContainer');
-			graphsContainer.innerHTML = ""; // Clear previous graphs
-
-			for (let i = 1; i <= numGraphs; i++) {
-				// Create new canvas elements for the graph and the final distribution chart
-				const graphWrapper = document.createElement("div");
-				graphWrapper.style.marginBottom = "40px";
-
-				const graphCanvas = document.createElement("canvas");
-				graphCanvas.id = `graphCanvas${i}`;
-				graphWrapper.appendChild(graphCanvas);
-
-				const finalDistributionCanvas = document.createElement("canvas");
-				finalDistributionCanvas.id = `finalDistributionCanvas${i}`;
-				graphWrapper.appendChild(finalDistributionCanvas);
-
-				graphsContainer.appendChild(graphWrapper);
-
-				// Generate the graph for this iteration
-				generateGraphInstance(
-					probabilities,
-					numIterations,
-					graphCanvas.id,
-					finalDistributionCanvas.id,
-					i
-				);
-			}
-		}
-
-		function generateGraphInstance(probabilities, numIterations, graphCanvasId, finalDistributionCanvasId, graphIndex) {
-			const seriesData = Array(probabilities.length).fill(0).map(() => [0]);
-			const means = Array(probabilities.length).fill(0);
-			const variances = Array(probabilities.length).fill(0);
-			const counts = Array(probabilities.length).fill(0);
-			const finalCounts = Array(probabilities.length).fill(0);
-
-			for (let i = 1; i <= numIterations; i++) {
-				let cumulativeProbability = 0;
-				const randomValue = Math.random();
-				let jumpedIndex = -1;
-
-				for (let j = 0; j < probabilities.length; j++) {
-					cumulativeProbability += probabilities[j];
-					if (randomValue < cumulativeProbability && jumpedIndex === -1) {
-						const newValue = seriesData[j][seriesData[j].length - 1] + 1;
-						seriesData[j].push(newValue);
-						jumpedIndex = j;
-
-						counts[j]++;
-						finalCounts[j] += 1;
-						const previousMean = means[j];
-						means[j] = calculateMean(means[j], newValue, counts[j]);
-						variances[j] = calculateVariance(variances[j], previousMean, means[j], newValue, counts[j]);
-					} else {
-						const lastValue = seriesData[j][seriesData[j].length - 1];
-						seriesData[j].push(lastValue);
-					}
-				}
-			}
-
-			const finalVariances = variances.map((variance, index) => variance / (counts[index] - 1));
-
-			const maxY = Math.max(...seriesData.map(data => Math.max(...data)));
-
-			// Generate the line chart
-			const ctxLine = document.getElementById(graphCanvasId).getContext('2d');
-			new Chart(ctxLine, {
-				type: 'line',
-				data: {
-					labels: Array.from({ length: numIterations + 1 }, (_, i) => i),
-					datasets: seriesData.map((data, index) => ({
-						label: `Graph ${graphIndex} - Line ${index + 1} (Mean: ${means[index].toFixed(2)}, Var: ${finalVariances[index].toFixed(2)})`,
-						data: data,
-						borderColor: getRandomColor(),
-						borderWidth: 1,
-						radius: 0.1,
-						fill: false,
-					})),
-				},
-				options: {
-					responsive: true,
+					plugins: {
+						legend: {
+							display: true,
+						},
+					},
 					scales: {
 						x: {
-							type: 'linear',
 							title: {
 								display: true,
-								text: 'Iterations',
+								text: 'Iteration Index',
 							},
 						},
 						y: {
 							beginAtZero: true,
-							suggestedMax: maxY + 1,
 							title: {
 								display: true,
-								text: 'Cumulative Jumps',
-							},
-						},
-					},
-				},
-			});
-
-			// Generate the bar chart for the final distribution
-			const expectedCounts = probabilities.map(prob => prob * numIterations);
-			const ctxBar = document.getElementById(finalDistributionCanvasId).getContext('2d');
-			new Chart(ctxBar, {
-				type: 'bar',
-				data: {
-					labels: finalCounts.map((_, index) => `Line ${index + 1}`),
-					datasets: [
-						{
-							label: `Graph ${graphIndex} - Observed Distribution`,
-							data: finalCounts,
-							backgroundColor: getRandomColor(),
-						},
-						{
-							label: `Graph ${graphIndex} - Expected Distribution`,
-							data: expectedCounts,
-							backgroundColor: getRandomColor(),
-						}
-					]
-				},
-				options: {
-					responsive: true,
-					scales: {
-						y: {
-							beginAtZero: true,
-							title: {
-								display: true,
-								text: 'Counts',
+								text: 'Mean Value',
 							},
 						},
 					},
 				},
 			});
 		}
-
-
+		
+		function drawFrequencyGraph(meanValues) {
+			// Round the values to 2 decimal places and calculate frequencies
+			const roundedMeans = meanValues.map(val => parseFloat(val.toFixed(2)));
+			const frequencyMap = {};
+		
+			roundedMeans.forEach(mean => {
+				frequencyMap[mean] = (frequencyMap[mean] || 0) + 1;
+			});
+		
+			// Sort the values
+			const sortedValues = Object.keys(frequencyMap)
+				.map(val => parseFloat(val))
+				.sort((a, b) => a - b);
+		
+			const frequencies = sortedValues.map(val => frequencyMap[val]);
+		
+			// Ensure only one canvas for the frequency graph
+			let freqCanvas = document.getElementById('frequencyChart');
+			if (!freqCanvas) {
+				freqCanvas = document.createElement('canvas');
+				freqCanvas.id = 'frequencyChart';
+				freqCanvas.width = 600;
+				freqCanvas.height = 400;
+				document.querySelector('.canvas-container').appendChild(freqCanvas);
+			}
+		
+			const chartCtx = freqCanvas.getContext('2d');
+			if (window.frequencyChartInstance) {
+				window.frequencyChartInstance.destroy();
+			}
+		
+			window.frequencyChartInstance = new Chart(chartCtx, {
+				type: 'bar', // Bar graph for frequency
+				data: {
+					labels: sortedValues, // X-axis: sorted mean values
+					datasets: [
+						{
+							label: 'Frequency',
+							data: frequencies, // Y-axis: frequency of each mean value
+							backgroundColor: 'rgba(153, 102, 255, 0.6)',
+							borderColor: 'rgba(153, 102, 255, 1)',
+							borderWidth: 1,
+						},
+					],
+				},
+				options: {
+					responsive: true,
+					plugins: {
+						legend: {
+							display: true,
+						},
+					},
+					scales: {
+						x: {
+							title: {
+								display: true,
+								text: 'Mean Values (Rounded)',
+							},
+						},
+						y: {
+							beginAtZero: true,
+							title: {
+								display: true,
+								text: 'Frequency',
+							},
+						},
+					},
+				},
+			});
+		}
+		
+		function displayOverallResults(overallMean, variance) {
+			// Remove existing result text if any
+			let resultsDiv = document.getElementById('resultsDiv');
+			if (!resultsDiv) {
+				resultsDiv = document.createElement('div');
+				resultsDiv.id = 'resultsDiv';
+				document.querySelector('.canvas-container').appendChild(resultsDiv);
+			}
+		
+			resultsDiv.innerHTML = `
+				<p><strong>Overall Mean of Sample Means:</strong> ${overallMean.toFixed(2)}</p>
+				<p><strong>Variance of Sample Means:</strong> ${variance.toFixed(4)}</p>
+			`;
+		}
 	</script>
 </body>
