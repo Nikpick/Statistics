@@ -312,7 +312,7 @@
 		smaller than the parent variance. This reduction is explained by the relationship:
 	</p>
 	\[
-	Variance of Sample Mean = \frac{Parent Variance}{Sample Size}
+	Variance of Sample Mean=\frac{Parent Variance}{Sample Size}
 	\]
 	<p>
 		As the sample size increases, the variance of the sample mean decreases. This reflects the fact that larger
@@ -327,14 +327,14 @@
 		parent distribution.
 	</p>
 
-	<h2>Analysis of the Random Variable \( Y = g^U \mod n \)</h2>
+	<h2>Analysis of the Random Variable \(Y=g^U\modn\)</h2>
 	<p>
-		Given the random variable \( Y = g^U \mod n \), where \( U \) is uniformly distributed in \([1,
-		max U]\), we aim to analyze the distributions of \( Y \) for the following cases:
+		Given the random variable \(Y=g^U\modn\), where \(U\) is uniformly distributed in \([1,
+		max U]\), we aim to analyze the distributions of \(Y\) for the following cases:
 	</p>
 	<ol>
-		<li>Case A: \( n = 19 \), \( g = 2, 3, 10, 17 \)</li>
-		<li>Case B: \( n = 15 \), \( g = 3, 6, 9, 12 \)</li>
+		<li>Case A: \(n=19\),\(g =2,3,10,17\)</li>
+		<li>Case B: \(n=15\),\(g=3,6,9,12\)</li>
 	</ol>
 	<p>
 		For each case, the goal is to observe the shape of the distributions, compute the entropy or other diversity
@@ -343,59 +343,59 @@
 	</p>
 	<h3>Observations on the Shape of Distributions</h3>
 	<p>
-		In Case A (\( n = 19 \)), the values of \( g \) were chosen from the set \(\{2, 3, 10, 17\}\), which are
-		generators or elements that produce relatively diverse residues when raised to successive powers modulo \( n \).
-		This choice results in a distribution of \( Y \) that is more uniform, as these values of \( g \) are coprime to
+		In Case A (\(n=19\)), the values of \(g\) were chosen from the set \(\{2, 3, 10, 17\}\), which are
+		generators or elements that produce relatively diverse residues when raised to successive powers modulo \(n\).
+		This choice results in a distribution of \( Y \) that is more uniform, as these values of \(g\) are coprime to
 		\( n \) and exhibit good cyclic properties. The uniformity in the distribution contributes to higher entropy,
 		indicating greater randomness and unpredictability.
 	</p>
 	<p>
-		In contrast, in Case B (\( n = 15 \)), the values of \( g \) are multiples of 3 (\( g = 3, 6, 9, 12\)). These
-		values lead to distributions that are less uniform because they produce fewer distinct residues modulo \( n \).
-		For example, when \( g = 9 \), the sequence of residues modulo \( 15 \) may exhibit repeating patterns or
+		In contrast, in Case B (\(n=15\)), the values of \(g\) are multiples of 3 (\(g=3,6,9,12\)). These
+		values lead to distributions that are less uniform because they produce fewer distinct residues modulo \(n\).
+		For example, when \(g=9\), the sequence of residues modulo \(15\) may exhibit repeating patterns or
 		clusters, resulting in lower entropy and higher predictability.
 	</p>
 	<h3>Computing Entropy and Diversity Indexes</h3>
 	<p>
-		The entropy \( H(Y) \) of the random variable \( Y \) can be computed using the formula:
+		The entropy \(H(Y)\) of the random variable \(Y\) can be computed using the formula:
 	</p>
 	\[
 	H(Y)=-\sum_{y\in\text{Range}(Y)}P(y)\log_2 P(y)
 	\]
 	<p>
-		In Case A, the entropy values are expected to be higher due to the more uniform distribution of \( Y \). In Case
+		In Case A, the entropy values are expected to be higher due to the more uniform distribution of \(Y\). In Case
 		B, the entropy is lower, reflecting reduced diversity in the residue values and greater predictability.
 	</p>
 	<h3>Cryptographic Implications</h3>
 	<p>
-		Case A demonstrates properties desirable for cryptographic applications. The uniformity of \( Y \) ensures that
+		Case A demonstrates properties desirable for cryptographic applications. The uniformity of \(Y\) ensures that
 		the output is less predictable, making it more secure against attacks based on residue analysis. High entropy
-		implies a higher level of randomness, which is critical for robust cryptographic systems. The choice of \( g \)
-		in Case A from the set \(\{2, 3, 10, 17\}\) ensures good distribution properties, as these values are selected
-		to avoid redundancy and maximize residue diversity modulo \( n \).
+		implies a higher level of randomness, which is critical for robust cryptographic systems. The choice of \(g\)
+		in Case A from the set \(\{2,3,10,17\}\) ensures good distribution properties, as these values are selected
+		to avoid redundancy and maximize residue diversity modulo \(n\).
 	</p>
 	<p>
 		In Case B, the reduced uniformity and lower entropy highlight potential vulnerabilities. The higher
-		predictability of \( Y \) means an attacker could exploit the repeating patterns in the residues to deduce the
+		predictability of \(Y\) means an attacker could exploit the repeating patterns in the residues to deduce the
 		underlying parameters, making it unsuitable for secure cryptographic applications. The choice of \( g \) as
 		multiples of 3 in this case contributes to the lack of diversity, further illustrating the importance of
 		selecting appropriate values for cryptographic primitives.
 	</p>
-	<h3>Rationale for Choosing \(\{2, 3, 10, 17\}\) in Case A</h3>
+	<h3>Rationale for Choosing \(\{2,3,10,17\}\) in Case A</h3>
 	<p>
-		The set \(\{2, 3, 10, 17\}\) was likely chosen because these values are coprime to \( n = 19 \), ensuring that
-		they generate a greater range of residues when raised to powers modulo \( n \). This choice enhances the
-		uniformity of the distribution of \( Y \), making the random variable more suitable for cryptographic purposes.
+		The set \(\{2,3,10,17\}\) was likely chosen because these values are coprime to \(n=19\), ensuring that
+		they generate a greater range of residues when raised to powers modulo \(n\). This choice enhances the
+		uniformity of the distribution of \(Y\), making the random variable more suitable for cryptographic purposes.
 		Furthermore, these values avoid trivial cycles and ensure that the residues span a significant portion of the
 		range \([0, n-1]\).
 	</p>
 	<h3>Possible Errors in the Exercise</h3>
 	<p>
-		One potential error in the exercise could be the lack of explicit clarification about the role of \( g \) as a
-		generator modulo \( n \). For instance, not all values of \( g \) will produce a uniform distribution of
-		residues modulo \( n \), so the selection of \( g \) is crucial. Another possible oversight is the assumption
-		that the distribution is always uniform for all \( g \), which is not the case, especially in Case B, where \( g
-		\) values lead to repeating patterns. These factors should be explicitly addressed to avoid misunderstandings
+		One potential error in the exercise could be the lack of explicit clarification about the role of \(g\) as a
+		generator modulo \(n\). For instance, not all values of \(g\) will produce a uniform distribution of
+		residues modulo \(n\), so the selection of \(g\) is crucial. Another possible oversight is the assumption
+		that the distribution is always uniform for all \(g\), which is not the case, especially in Case B, where \(g
+	\) values lead to repeating patterns. These factors should be explicitly addressed to avoid misunderstandings
 		about the implications of the observed distributions.
 	</p>
 	<p>
