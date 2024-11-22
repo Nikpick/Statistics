@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Homework #8</title>
+	<link rel="stylesheet" href="css/styles.css">
+	<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.js"></script>
+</head>
+
+<body>
+	<a href="index.html">Home</a>
+	<h1>Statistics - Homework #8 [Y.2024-2025]</h1>
+
+	<section>
+		<h2>Shannon Entropy and Diversity Measures of Distributions</h2>
+		<p>
+			Shannon entropy is a fundamental concept in information theory, introduced by Claude Shannon in 1948. It quantifies the uncertainty or randomness in a probability distribution and serves as a measure of diversity. Mathematically, the entropy \(H(X)\) of a discrete random variable \(X\), with a probability distribution \(P = {p_1, p_2, ..., p_n}\), is given by:
+		</p>
+		<p>
+			\(H(X) = - \sum_{i=1}^{n} p_i log(p_i)\)
+		</p>
+		<p>
+			where \(p_i\) is the probability of the \(i\)-th outcome, and the logarithm is usually taken in base 2 (bits) or base \(e\) (nats). Higher entropy implies greater uncertainty or diversity in the distribution, while lower entropy indicates that the outcomes are more predictable. Shannon entropy has applications across various fields, from physics and biology to data compression and machine learning.
+		</p>
+		<p>
+			Beyond Shannon entropy, there are other measures of diversity in distributions, such as the Simpson index, Gini-Simpson index, and Rényi entropy. These measures capture different aspects of diversity, such as richness, evenness, and dominance. For example, the Gini-Simpson index, often used in ecology, is given by \(1 - \sum_{i=1}^{n} p_i^2\) and emphasizes the probability of randomly picking two different outcomes. These metrics are invaluable for studying systems where the diversity of outcomes is crucial, such as genetic variation, ecological populations, or linguistic structures.
+		</p>
+		</section>
+
+		<section>
+		<h2>Primitive Roots Modulo a Prime</h2>
+		<p>
+			The concept of primitive roots arises in number theory and plays a central role in modular arithmetic. Given a prime number \(p\), a number \(g\) is called a <i>primitive root modulo \(p\)</i> if for every integer \(a\) that is coprime to \(p\), there exists an integer \(k\) such that:
+		</p>
+		<p>
+			\(g_k mod p = a\)
+		</p>
+		<p>
+			In other words, \(g\) is a generator of the multiplicative group of integers modulo \(p\), denoted \((&#8484;/p&#8484;)^&times;\). The multiplicative group \((&#8484;/p&#8484;)^&times;\) consists of all integers \(1, 2, ..., p-1\) under multiplication modulo \(p\). If \(g\) is a primitive root modulo \(p\), then the powers of \(g mod p\) produce all elements of the group exactly once before repeating.
+		</p>
+		<p>
+			Primitive roots exist for all prime numbers \(p\), and the number of primitive roots modulo \(p\) is given by Euler's totient function \(&phi;(&phi;(p))\), where \(&phi;(p) = p-1\). For example, if \(p = 7\), the primitive roots modulo 7 are \(g = 3\) and \(g = 5\). Primitive roots are widely used in cryptography, particularly in algorithms like Diffie-Hellman key exchange and the RSA encryption scheme, as they provide a foundation for secure modular arithmetic operations.
+		</p>
+	</section>
+		
+	<h1>Practice</h1>
+	<textarea id="inputText" placeholder="Paste your text here..."></textarea>
+    <button id="generateChart">Generate Letter Frequency</button>
+    <canvas id="frequencyChart"></canvas>
+    <h2>Caesar Cipher</h2>
+    <p id="encryptionOutput"></p>
+    <p id="decryptionOutput"></p>
+
+    <script>
+    const alphabet = "abcdefghijklmnopqrstuvwxyz";
+
+    // Utility function to count letter frequencies
+    function countFrequencies(text) {
+        const frequencies = {};
+        for (let char of text.toLowerCase()) {
+        if (alphabet.includes(char)) {
+            frequencies[char] = (frequencies[char] || 0) + 1;
+        }
+        }
+        return frequencies;
+    }
+
+    // Utility function to shift text using Caesar Cipher
+    function caesarCipher(text, shift) {
+        return text
+        .split("")
+        .map((char) => {
+            const isUpperCase = char === char.toUpperCase();
+            char = char.toLowerCase();
+            if (alphabet.includes(char)) {
+            const shiftedIndex = (alphabet.indexOf(char) + shift) % alphabet.length;
+            const shiftedChar = alphabet[shiftedIndex];
+            return isUpperCase ? shiftedChar.toUpperCase() : shiftedChar;
+            }
+          return char; // Non-alphabetical characters remain the same
+        })
+        .join("");
+    }
+
+    // Decrypt text using frequency analysis
+    function decryptUsingFrequencyAnalysis(encryptedText) {
+        const encryptedFrequencies = countFrequencies(encryptedText);
+        const sortedEncrypted = Object.entries(encryptedFrequencies).sort((a, b) => b[1] - a[1]);
+      	const englishFreqOrder = "etaoinshrdlcumwfgypbvkjxqz"; // Approximate order of English letter frequencies
+        const potentialShift = alphabet.indexOf(sortedEncrypted[0][0]) - alphabet.indexOf(englishFreqOrder[0]);
+
+        return caesarCipher(encryptedText, (alphabet.length - potentialShift) % alphabet.length);
+    }
+
+    // Generate Chart.js bar chart
+    function generateChart(frequencies) {
+        const labels = Object.keys(frequencies).sort();
+        const data = labels.map((letter) => frequencies[letter]);
+
+        const ctx = document.getElementById("frequencyChart").getContext("2d");
+        new Chart(ctx, {
+        type: "bar",
+        data: {
+            labels: labels,
+            datasets: [{
+            label: "Letter Frequency",
+            data: data,
+            backgroundColor: "rgba(75, 192, 192, 0.2)",
+            borderColor: "rgba(75, 192, 192, 1)",
+            borderWidth: 1
+            }]
+        },
+        options: {
+            scales: {
+            y: {
+                beginAtZero: true
+            }
+            }
+        }
+        });
+    }
+
+    // Main event listener
+    document.getElementById("generateChart").addEventListener("click", () => {
+        const inputText = document.getElementById("inputText").value;
+
+      // Step 1: Letter frequency distribution
+        const frequencies = countFrequencies(inputText);
+        generateChart(frequencies);
+
+      // Step 2: Caesar cipher encryption
+      	const randomShift = Math.floor(Math.random() * 25) + 1;
+        const encryptedText = caesarCipher(inputText, randomShift);
+        document.getElementById("encryptionOutput").innerHTML = `
+        <strong>Encrypted Text (Shift: ${randomShift}):</strong> ${encryptedText}
+        `;
+
+      // Step 3: Frequency analysis decryption
+        const decryptedText = decryptUsingFrequencyAnalysis(encryptedText);
+        document.getElementById("decryptionOutput").innerHTML = `
+        <strong>Decrypted Text:</strong> ${decryptedText}
+        `;
+    });
+    </script>
+</body>
