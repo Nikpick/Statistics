@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Homework #9</title>
+	<link rel="stylesheet" href="css/styles.css">
+	<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.js"></script>
+</head>
+
+<body>
+	<a href="index.html">Home</a>
+	<h1>Statistics - Homework #9 [Y.2024-2025]</h1>
+
+	<h1>Main Properties of Sampling Mean and Variance</h1>
+
+        <h2>Sampling Mean (Sample Mean)</h2>
+        <p>
+            The sample mean is a fundamental concept in statistics, representing the average of a set of data points. 
+            To compute it, we sum all the data points in a sample and divide that sum by the number of points. 
+            Mathematically, the sample mean is given by the formula:
+        </p>
+        <p>\[
+            \bar{X} = \frac{1}{n} \sum_{i=1}^{n} X_i
+            \]</p>
+        <p>
+            Here, \( X_i \) represents the individual data points in the sample, and \( n \) is the number of data points.
+            The sample mean serves as an estimate of the population mean and is critical in inferential statistics.
+        </p>
+
+        <h2>Sampling Variance</h2>
+        <p>
+            Variance measures how spread out the data points in a sample are. It tells us how much the individual data points 
+            deviate from the sample mean. The formula for the sample variance is:
+        </p>
+        <p>\[
+            s^2 = \frac{1}{n-1} \sum_{i=1}^{n} (X_i - \bar{X})^2
+            \]</p>
+        <p>
+            In this equation, \( s^2 \) is the sample variance, \( X_i \) are the individual data points, and \( \bar{X} \) 
+            is the sample mean.
+        </p>
+
+		<h1>Law of Large Numbers (LLN)</h1>
+    <p>
+        The <strong>Law of Large Numbers (LLN)</strong> is a fundamental theorem in probability theory that states that as the sample size increases, the sample mean will converge to the true population mean. This concept assures us that with sufficient data, our sample-based estimates will closely approximate the actual values we are trying to measure. LLN comes in two main forms:
+    </p>
+    <ul>
+        <li><strong>Weak Law of Large Numbers (WLLN):</strong> The sample mean converges in probability to the population mean as the sample size increases. In simple terms, the likelihood of the sample mean deviating significantly from the population mean decreases as the sample size grows.</li>
+        <li><strong>Strong Law of Large Numbers (SLLN):</strong> The sample mean converges almost surely (with probability 1) to the population mean as the sample size approaches infinity.</li>
+    </ul>
+    <p>
+        Both forms provide a powerful guarantee that large samples yield increasingly accurate estimates of population parameters.
+    </p>
+
+    <h2>Illustration of the Law of Large Numbers</h2>
+    <div class="example">
+        <p>
+            Imagine flipping a fair coin. The true probability of getting heads is 0.5. If you flip the coin a few times, say 10 flips, the proportion of heads might deviate significantly from 0.5, with, for example, 7 heads out of 10 flips. However, as you increase the number of flips—say, to 1000 or even 10,000—the proportion of heads will approach 0.5.
+        </p>
+        <p>
+            This illustrates the Law of Large Numbers: with a small sample, the mean (the proportion of heads) can vary greatly from the true mean, but as the sample size increases, the observed mean converges to the true mean.
+        </p>
+    </div>
+
+    <h2>Applications of the Law of Large Numbers in Cybersecurity</h2>
+    <p>
+        The Law of Large Numbers is not only a theoretical concept but also has practical applications, particularly in fields such as cybersecurity. In cybersecurity, decisions are often made based on observed data, and LLN ensures that those decisions become more reliable as more data is collected.
+    </p>
+    <p>Here are some specific applications:</p>
+    <ul>
+        <li>
+            <strong>Network Traffic Analysis:</strong> Cybersecurity analysts may monitor network traffic patterns for anomalies, such as unusual login attempts. When the sample size is small, distinguishing between normal fluctuations and actual threats can be difficult. However, with more data, the frequency of anomalies becomes more accurately measurable, aiding threat detection.
+        </li>
+        <li>
+            <strong>Intrusion Detection Systems (IDS):</strong> IDS models often rely on historical data to detect potential intrusions or malicious activity. With larger datasets, the system can better identify patterns of behavior indicative of attacks, improving accuracy over time.
+        </li>
+        <li>
+            <strong>Risk Assessment and Vulnerability Prediction:</strong> Cybersecurity teams analyze large datasets of past attacks or vulnerabilities to predict which vulnerabilities are most likely to be exploited. Larger datasets lead to more reliable predictions, enabling better prioritization of security measures.
+        </li>
+        <li>
+            <strong>Penetration Testing:</strong> Penetration testers simulate attacks on systems to identify weaknesses. By testing a representative sample of systems or configurations, they can estimate the overall security posture of an organization. As the sample size increases, their estimates become more accurate.
+        </li>
+    </ul>
+
+	<h2>Mean and Variance Analysis (<i>Code Part</i>)</h2>
+	<p>
+		The average of the sample means closely approximates the theoretical mean of the parent distribution, as the
+		samples are generated to adhere to the specified probabilities. This relationship holds true regardless of
+		changes in the sample size n or the number of samples m. For variance, a similar pattern emerges, but the
+		variance of the sample mean distribution is lower than the parent distribution's variance. This reduction occurs
+		because the variance of the sample mean decreases as the sample size n increases, reflecting the principles of
+		statistical averaging.
+	</p>
+
+	<h2>Code Changes</h2>
+	<p>
+		The primary change in the code, compared to the previous <a href="Homework_7.html">Homework #7</a>, involves the generation of the variance
+		distribution. In this version, the distribution is created using the <code>varianceArray</code> array.
+	</p>
+
+	<label for="numFields">Enter number of fields (2-20): </label>
+	<input type="number" id="numFields" min="2" max="20" step="1">
+	<button onclick="createFields()">Create Fields</button>
+
+	<div id="inputContainer"></div>
+	<button id="randomizeButton" onclick="randomizeFields()" style="display: none;">Randomize Fields</button>
+	<p id="sumStatus">Sum: 0.00</p>
+
+	<label for="sampleSize">Enter sample size (n): </label>
+	<input type="number" id="sampleSize" min="1" max="1000" value="20">
+	<div id="inputContainer"></div>
+	<label for="numIterations">Enter number of iterations (m): </label>
+	<input type="number" id="numIterations" min="1" max="1000000" value="100">
+	<button id="generateGraphButton" onclick="generateGraph()" disabled>Generate Graph</button>
+
+	<div class="canvas-container">
+		<canvas id="meanVarianceChart" width="600" height="400" style="display:none;"></canvas>
+	</div>
+
+	<script>
+		function getRandomColor() {
+			const letters = '0123456789ABCDEF';
+			let color = '#';
+			for (let i = 0; i < 6; i++) {
+				color += letters[Math.floor(Math.random() * 16)];
+			}
+			return color;
+		}
+
+		function createFields() {
+			const numFields = document.getElementById('numFields').value;
+
+			if (numFields < 2 || numFields > 20) {
+				alert("Please enter a number between 2 and 20.");
+				return;
+			}
+
+			const container = document.getElementById('inputContainer');
+			container.innerHTML = ""; // Clear previous input fields
+			document.getElementById('sumStatus').innerText = "Sum: 0.00";
+			document.getElementById('generateGraphButton').disabled = true;
+			document.getElementById('randomizeButton').style.display = 'inline'; // Show the randomize button
+
+			for (let i = 0; i < numFields; i++) {
+				const input = document.createElement("input");
+				input.type = "number";
+				input.step = "0.01";
+				input.min = "0";
+				input.max = "100";
+				input.placeholder = `Probability ${i + 1}`;
+				input.oninput = validateSum;
+
+				container.appendChild(input);
+				container.appendChild(document.createElement("br"));
+			}
+		}
+
+		function randomizeFields() {
+			const inputs = document.querySelectorAll("#inputContainer input");
+			const numFields = inputs.length;
+			const randomValues = generateRandomProbabilities(numFields);
+
+			inputs.forEach((input, index) => {
+				input.value = randomValues[index].toFixed(2);
+			});
+
+			validateSum(); // Update the sum display and enable the button if valid
+		}
+
+		function generateRandomProbabilities(numFields) {
+			let values = Array(numFields).fill(0).map(() => Math.random());
+			const sum = values.reduce((acc, val) => acc + val, 0);
+			values = values.map(val => (val / sum) * 100);
+			values = values.map(val => parseFloat(val.toFixed(2)));
+			const roundedSum = values.reduce((acc, val) => acc + val, 0);
+			const difference = 100 - roundedSum;
+			values[values.length - 1] += parseFloat(difference.toFixed(2));
+			return values;
+		}
+
+		function validateSum() {
+			const inputs = document.querySelectorAll("#inputContainer input");
+			let sum = 0;
+
+			inputs.forEach(input => {
+				const value = parseFloat(input.value) || 0;
+				sum += value;
+			});
+
+			document.getElementById('sumStatus').innerText = "Sum: " + sum.toFixed(2) + " should be 100";
+			document.getElementById('generateGraphButton').disabled = (sum.toFixed(2) !== "100.00");
+		}
+
+		function generateGraph() {
+			const inputs = document.querySelectorAll("#inputContainer input");
+			const probabilities = Array.from(inputs).map(input => parseFloat(input.value) / 100 || 0);
+
+			const numIterations = parseInt(document.getElementById('numIterations').value, 10);
+			const sampleSize = parseInt(document.getElementById('sampleSize').value, 10);
+
+			const valueMapping = probabilities.map((_, i) => i + 1); // Assign numbers to values
+			const variances = []; // Store variance for each iteration
+
+			// Generate samples and calculate stats
+			for (let i = 0; i < numIterations; i++) {
+				const sample = [];
+				for (let j = 0; j < sampleSize; j++) {
+					const rand = Math.random();
+					let cumulativeProbability = 0;
+					for (let k = 0; k < probabilities.length; k++) {
+						cumulativeProbability += probabilities[k];
+						if (rand <= cumulativeProbability) {
+							sample.push(valueMapping[k]);
+							break;
+						}
+					}
+				}
+
+				// Calculate the sample mean
+				const sampleMean = sample.reduce((acc, val) => acc + val, 0) / sampleSize;
+
+				// Calculate variance (corrected or uncorrected)
+				const corrected = true; // Toggle for corrected or uncorrected variance
+				const variance = sample.reduce((acc, val) => acc + Math.pow(val - sampleMean, 2), 0) /
+					(corrected ? (sampleSize - 1) : sampleSize);
+
+				variances.push(variance);
+			}
+
+			// Calculate overall mean and variance of sample variances
+			const overallMean = variances.reduce((acc, val) => acc + val, 0) / numIterations;
+			const varianceOfVariances =
+				variances.reduce((acc, val) => acc + Math.pow(val - overallMean, 2), 0) / numIterations;
+
+			// Generate graphs and display results
+			drawLineGraph(variances);
+			drawFrequencyGraph(variances);
+			displayOverallResults(overallMean, varianceOfVariances, corrected);
+		}
+
+		function drawLineGraph(variances) {
+			document.getElementById('meanVarianceChart').style.display = 'block';
+			const ctx = document.getElementById('meanVarianceChart').getContext('2d');
+
+			if (window.meanVarianceChartInstance) {
+				window.meanVarianceChartInstance.destroy();
+			}
+
+			window.meanVarianceChartInstance = new Chart(ctx, {
+				type: 'line',
+				data: {
+					labels: Array.from({ length: variances.length }, (_, i) => i + 1),
+					datasets: [
+						{
+							label: 'Variance Values',
+							data: variances,
+							borderColor: 'rgba(255, 99, 132, 1)',
+							backgroundColor: 'rgba(255, 99, 132, 0.2)',
+							borderWidth: 2,
+							tension: 0.1,
+						},
+					],
+				},
+				options: {
+					responsive: true,
+					plugins: {
+						legend: {
+							display: true,
+						},
+					},
+					scales: {
+						x: {
+							title: {
+								display: true,
+								text: 'Iteration Index',
+							},
+						},
+						y: {
+							beginAtZero: true,
+							title: {
+								display: true,
+								text: 'Variance Value',
+							},
+						},
+					},
+				},
+			});
+		}
+
+		function drawFrequencyGraph(meanValues) {
+			// Round the values to 2 decimal places and calculate frequencies
+			const roundedMeans = meanValues.map(val => parseFloat(val.toFixed(2)));
+			const frequencyMap = {};
+
+			roundedMeans.forEach(mean => {
+				frequencyMap[mean] = (frequencyMap[mean] || 0) + 1;
+			});
+
+			// Sort the values
+			const sortedValues = Object.keys(frequencyMap)
+				.map(val => parseFloat(val))
+				.sort((a, b) => a - b);
+
+			const frequencies = sortedValues.map(val => frequencyMap[val]);
+
+			// Ensure only one canvas for the frequency graph
+			let freqCanvas = document.getElementById('frequencyChart');
+			if (!freqCanvas) {
+				freqCanvas = document.createElement('canvas');
+				freqCanvas.id = 'frequencyChart';
+				freqCanvas.width = 600;
+				freqCanvas.height = 400;
+				document.querySelector('.canvas-container').appendChild(freqCanvas);
+			}
+
+			const chartCtx = freqCanvas.getContext('2d');
+			if (window.frequencyChartInstance) {
+				window.frequencyChartInstance.destroy();
+			}
+
+			window.frequencyChartInstance = new Chart(chartCtx, {
+				type: 'bar', // Bar graph for frequency
+				data: {
+					labels: sortedValues, // X-axis: sorted mean values
+					datasets: [
+						{
+							label: 'Frequency',
+							data: frequencies, // Y-axis: frequency of each mean value
+							backgroundColor: 'rgba(153, 102, 255, 0.6)',
+							borderColor: 'rgba(153, 102, 255, 1)',
+							borderWidth: 1,
+						},
+					],
+				},
+				options: {
+					responsive: true,
+					plugins: {
+						legend: {
+							display: true,
+						},
+					},
+					scales: {
+						x: {
+							title: {
+								display: true,
+								text: 'Mean Values (Rounded)',
+							},
+						},
+						y: {
+							beginAtZero: true,
+							title: {
+								display: true,
+								text: 'Frequency',
+							},
+						},
+					},
+				},
+			});
+		}
+
+		function displayOverallResults(overallMean, varianceOfVariances, corrected) {
+			let resultsDiv = document.getElementById('resultsDiv');
+			if (!resultsDiv) {
+				resultsDiv = document.createElement('div');
+				resultsDiv.id = 'resultsDiv';
+				document.querySelector('.canvas-container').appendChild(resultsDiv);
+			}
+
+			resultsDiv.innerHTML = `
+				<p><strong>Overall Mean of Sample Variances (${corrected ? "Corrected" : "Uncorrected"}):</strong> ${overallMean.toFixed(4)}</p>
+				<p><strong>Variance of Sample Variances:</strong> ${varianceOfVariances.toFixed(4)}</p>
+			`;
+		}
+
+
+	</script>
+</body>

@@ -46,104 +46,185 @@
 			Primitive roots exist for all prime numbers \(p\), and the number of primitive roots modulo \(p\) is given by Euler's totient function \(&phi;(&phi;(p))\), where \(&phi;(p) = p-1\). For example, if \(p = 7\), the primitive roots modulo 7 are \(g = 3\) and \(g = 5\). Primitive roots are widely used in cryptography, particularly in algorithms like Diffie-Hellman key exchange and the RSA encryption scheme, as they provide a foundation for secure modular arithmetic operations.
 		</p>
 	</section>
-		
-	<h1>Practice</h1>
-	<textarea id="inputText" placeholder="Paste your text here..."></textarea>
+
+    <h1>Practice</h1>
+    <textarea id="inputText" placeholder="Paste your text here..."></textarea>
     <button id="generateChart">Generate Letter Frequency</button>
     <canvas id="frequencyChart"></canvas>
     <h2>Caesar Cipher</h2>
     <p id="encryptionOutput"></p>
     <p id="decryptionOutput"></p>
-
+  
+    <h2>Numeric Encoding</h2>
+    <p><strong>Formula:</strong> \( N^k \mod P \) </p>
+    <p><strong>Values:</strong> N = 10, P = 37</p>
+    <p id="numericEncodingOutput"></p>
+    <canvas id="numericChart"></canvas>
+  
+    <h2>Shannon Entropy</h2>
+    <p id="entropyOutput"></p>
+  
     <script>
-    const alphabet = "abcdefghijklmnopqrstuvwxyz";
-
-    // Utility function to count letter frequencies
-    function countFrequencies(text) {
+      const alphabet = "abcdefghijklmnopqrstuvwxyz";
+  
+      // Utility: Count letter frequencies
+      function countFrequencies(text) {
         const frequencies = {};
         for (let char of text.toLowerCase()) {
-        if (alphabet.includes(char)) {
+          if (alphabet.includes(char)) {
             frequencies[char] = (frequencies[char] || 0) + 1;
-        }
+          }
         }
         return frequencies;
-    }
-
-    // Utility function to shift text using Caesar Cipher
-    function caesarCipher(text, shift) {
+      }
+  
+      // Utility: Caesar cipher encryption
+      function caesarCipher(text, shift) {
         return text
-        .split("")
-        .map((char) => {
+          .split("")
+          .map((char) => {
             const isUpperCase = char === char.toUpperCase();
             char = char.toLowerCase();
             if (alphabet.includes(char)) {
-            const shiftedIndex = (alphabet.indexOf(char) + shift) % alphabet.length;
-            const shiftedChar = alphabet[shiftedIndex];
-            return isUpperCase ? shiftedChar.toUpperCase() : shiftedChar;
+              const shiftedIndex = (alphabet.indexOf(char) + shift) % alphabet.length;
+              const shiftedChar = alphabet[shiftedIndex];
+              return isUpperCase ? shiftedChar.toUpperCase() : shiftedChar;
             }
-          return char; // Non-alphabetical characters remain the same
-        })
-        .join("");
-    }
-
-    // Decrypt text using frequency analysis
-    function decryptUsingFrequencyAnalysis(encryptedText) {
+            return char; // Non-alphabetical characters remain unchanged
+          })
+          .join("");
+      }
+  
+      // Utility: Frequency analysis decryption
+      function decryptUsingFrequencyAnalysis(encryptedText) {
         const encryptedFrequencies = countFrequencies(encryptedText);
         const sortedEncrypted = Object.entries(encryptedFrequencies).sort((a, b) => b[1] - a[1]);
-      	const englishFreqOrder = "etaoinshrdlcumwfgypbvkjxqz"; // Approximate order of English letter frequencies
+        const englishFreqOrder = "etaoinshrdlcumwfgypbvkjxqz"; // Approximate English frequency order
         const potentialShift = alphabet.indexOf(sortedEncrypted[0][0]) - alphabet.indexOf(englishFreqOrder[0]);
-
         return caesarCipher(encryptedText, (alphabet.length - potentialShift) % alphabet.length);
-    }
-
-    // Generate Chart.js bar chart
-    function generateChart(frequencies) {
-        const labels = Object.keys(frequencies).sort();
-        const data = labels.map((letter) => frequencies[letter]);
-
-        const ctx = document.getElementById("frequencyChart").getContext("2d");
+      }
+  
+      // Part 2: Numeric encoding
+      function numericEncoding(text, n, p) {
+        return text
+          .toLowerCase()
+          .split("")
+          .map((char) => {
+            if (alphabet.includes(char)) {
+              const k = alphabet.indexOf(char); // Numeric representation (A=0, ..., Z=25)
+              return Math.pow(n, k) % p; // N^k mod P
+            }
+            return null; // Non-alphabetical characters are ignored in encoding
+          })
+          .filter((val) => val !== null); // Remove nulls
+      }
+  
+      // Calculate Shannon entropy
+      function calculateEntropy(distribution) {
+        const total = distribution.reduce((sum, count) => sum + count, 0);
+        return -distribution
+          .filter((count) => count > 0) // Exclude zeros
+          .map((count) => count / total) // Convert counts to probabilities
+          .reduce((entropy, prob) => entropy + prob * Math.log2(prob), 0); // Shannon entropy formula
+      }
+  
+      // Generate Chart.js chart
+      function generateChart(canvasId, labels, data, chartTitle) {
+        const ctx = document.getElementById(canvasId).getContext("2d");
         new Chart(ctx, {
-        type: "bar",
-        data: {
+          type: "bar",
+          data: {
             labels: labels,
             datasets: [{
-            label: "Letter Frequency",
-            data: data,
-            backgroundColor: "rgba(75, 192, 192, 0.2)",
-            borderColor: "rgba(75, 192, 192, 1)",
-            borderWidth: 1
+              label: chartTitle,
+              data: data,
+              backgroundColor: "rgba(75, 192, 192, 0.2)",
+              borderColor: "rgba(75, 192, 192, 1)",
+              borderWidth: 1
             }]
-        },
-        options: {
+          },
+          options: {
             scales: {
-            y: {
+              y: {
                 beginAtZero: true
+              }
             }
-            }
-        }
+          }
         });
-    }
-
-    // Main event listener
-    document.getElementById("generateChart").addEventListener("click", () => {
+      }
+  
+      // Main event listener
+      document.getElementById("generateChart").addEventListener("click", () => {
         const inputText = document.getElementById("inputText").value;
-
-      // Step 1: Letter frequency distribution
+  
+        // Step 1: Letter frequency distribution
         const frequencies = countFrequencies(inputText);
-        generateChart(frequencies);
-
-      // Step 2: Caesar cipher encryption
-      	const randomShift = Math.floor(Math.random() * 25) + 1;
+        const frequencyLabels = Object.keys(frequencies).sort();
+        const frequencyData = frequencyLabels.map((letter) => frequencies[letter]);
+        generateChart("frequencyChart", frequencyLabels, frequencyData, "Letter Frequency");
+  
+        // Step 2: Caesar cipher encryption
+        const randomShift = Math.floor(Math.random() * 25) + 1;
         const encryptedText = caesarCipher(inputText, randomShift);
         document.getElementById("encryptionOutput").innerHTML = `
-        <strong>Encrypted Text (Shift: ${randomShift}):</strong> ${encryptedText}
+          <strong>Encrypted Text (Shift: ${randomShift}):</strong> ${encryptedText}
         `;
-
-      // Step 3: Frequency analysis decryption
+  
+        // Step 3: Frequency analysis decryption
         const decryptedText = decryptUsingFrequencyAnalysis(encryptedText);
         document.getElementById("decryptionOutput").innerHTML = `
-        <strong>Decrypted Text:</strong> ${decryptedText}
+          <strong>Decrypted Text:</strong> ${decryptedText}
         `;
-    });
+  
+        // Step 4: Numeric encoding
+        const n = 10, p = 37;
+        const encodedValues = numericEncoding(inputText, n, p);
+        document.getElementById("numericEncodingOutput").innerHTML = `
+          <strong>Encoded Values:</strong> ${encodedValues.join(", ")}
+        `;
+  
+        // Step 5: Numeric encoding distribution
+        const encodingFrequencies = encodedValues.reduce((acc, val) => {
+          acc[val] = (acc[val] || 0) + 1;
+          return acc;
+        }, {});
+        const encodingLabels = Object.keys(encodingFrequencies).map(Number).sort((a, b) => a - b);
+        const encodingData = encodingLabels.map((val) => encodingFrequencies[val]);
+        generateChart("numericChart", encodingLabels, encodingData, "Numeric Encoding Distribution");
+  
+        // Step 6: Shannon entropy
+        const entropy = calculateEntropy(encodingData);
+        document.getElementById("entropyOutput").innerHTML = `
+          <strong>Shannon Entropy:</strong> ${entropy.toFixed(4)}
+        `;
+      });
     </script>
+    <h1>Summary of Findings</h1>
+
+  <h2>Part 1: Caesar Cipher Analysis</h2>
+  <p>
+    In the first part of the exercise, statistical analysis of letter frequency distributions revealed distinct patterns in the text. These patterns align closely with known frequencies in the English language, such as the high prevalence of letters like 'e,' 't,' and 'a.' 
+    This insight enabled effective decryption of the Caesar cipher using frequency analysis. 
+    The simplicity of the Caesar cipher relies on its predictable relationship between letters, making it vulnerable to this type of analysis.
+  </p>
+  <p>
+    The exercise also demonstrated how shifts in letter positions during encryption can obscure meaning. However, the statistical regularity of English text allows for quick decryption, showing the importance of understanding statistical properties in breaking weak cryptographic algorithms.
+  </p>
+
+  <h2>Part 2: Numeric Encoding with Modular Arithmetic</h2>
+  <p>
+    In the second part, the exercise involved encoding letters numerically and applying the formula \(N^k \mod P\) to transform the data. Unlike the Caesar cipher, this transformation produces distributions that are far less predictable and more resistant to analysis. 
+    The encoded values create a pseudo-random distribution when the parameters \(N\) (e.g., a primitive root modulo \(P\)) and \(P\) are chosen carefully.
+  </p>
+  <p>
+    This approach highlights the mathematical foundations of modern cryptographic algorithms, which rely on operations such as modular arithmetic and exponentiation to create complexity. While analyzing the encoded distribution using Shannon entropy revealed a lower predictability, the computational infeasibility of reversing the process without private keys underscores the strength of such algorithms.
+  </p>
+
+  <h2>Importance of Statistical Analysis in Cryptography</h2>
+  <p>
+    Statistical analysis is crucial for understanding cryptographic algorithms and evaluating their security. Weak algorithms like the Caesar cipher demonstrate how statistical patterns in plaintext can lead to vulnerabilities. In contrast, modern algorithms like RSA leverage mathematical transformations to eliminate such patterns, making statistical attacks significantly harder.
+  </p>
+  <p>
+    For cybersecurity professionals, the ability to analyze distributions, calculate entropy, and understand mathematical principles is vital. These skills help in identifying vulnerabilities in cryptographic systems, developing more secure algorithms, and ensuring data confidentiality in the digital age.
+  </p>
 </body>
