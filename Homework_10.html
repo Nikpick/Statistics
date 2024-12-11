@@ -10,3 +10,178 @@
 	<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.js"></script>
 </head>
+<body>
+    <h1>Theory and Research</h1>
+
+    <h2>General Concept of Sampling Mean and Variance</h2>
+    <p>
+        In statistics, the <strong>sampling mean</strong> is the average of a set of data points. It is a measure of the central tendency of the data and is calculated by summing all the data points and dividing by the number of points:
+        <br>
+        <i>Sample Mean:</i> 
+        <br>
+        \(\bar{x} = \frac{1}{n} \sum_{i=1}^{n} x_i \)
+        <br>
+        where \( x_1, x_2, \dots, x_n \) are the data points and \( n \) is the number of observations.
+    </p>
+    <p>
+        The <strong>sampling variance</strong> measures the spread of the data points around the sample mean. It is computed by averaging the squared differences between each data point and the sample mean:
+        <br>
+        <i>Sample Variance:</i>
+        <br>
+        \( s^2 = \frac{1}{n-1} \sum_{i=1}^{n} (x_i - \bar{x})^2 \)
+        <br>
+        where \( \bar{x} \) is the sample mean and \( n \) is the number of data points.
+    </p>
+    <p>
+        The <strong>sampling distribution</strong> of the sample mean and variance describes how these values behave over multiple samples. The mean of the sampling distribution of the sample mean is equal to the population mean, and the variance of the sampling distribution of the sample mean is the population variance divided by the sample size:
+        <br>
+        <i>Mean of Sampling Distribution:</i>
+        <br>
+        \( \mu_{\bar{x}} = \mu \)
+        <br>
+        <i>Variance of Sampling Distribution:</i>
+        <br>
+        \( \sigma^2_{\bar{x}} = \frac{\sigma^2}{n} \)
+        <br>
+        where \( \mu \) and \( \sigma^2 \) are the population mean and variance, respectively, and \( n \) is the sample size.
+    </p>
+
+    <h2>Lebesgue-Stieltjes Integration and Its Applications</h2>
+    <p>
+        The <strong>Lebesgue-Stieltjes integration</strong> is a generalization of the Lebesgue integral, developed to integrate functions with respect to a more general measure. It is an integral of a function \( f \) with respect to a measure \( \mu \) which is derived from a function \( G \), called the Stieltjes function. The Lebesgue-Stieltjes integral can be written as:
+        <br>
+        <i>Lebesgue-Stieltjes Integral:</i>
+        <br>
+        \( \int_a^b f(x) \, dG(x) = \int_a^b f(x) \, g'(x) dx \)
+        <br>
+        where \( g(x) \) is a function whose derivative \( g'(x) \) represents the measure \( \mu \). This form of integration is useful when the measure is not necessarily derived from a simple distribution, but from a more complex function \( G(x) \).
+    </p>
+    <p>
+        One key application of Lebesgue-Stieltjes integration is in <strong>probability theory</strong>. When the cumulative distribution function (CDF) \( F(x) \) of a random variable is differentiable, the Lebesgue-Stieltjes integral provides a method of calculating the expected value of a random variable. If \( f(x) \) is the probability density function (PDF) of the random variable \( X \), then the expected value of \( X \) can be written as:
+        <br>
+        <i>Expected Value:</i>
+        <br>
+        \( E[X] = \int_{-\infty}^{\infty} x f(x) \, dx \)
+        <br>
+        where \( f(x) \) is the probability density function.
+    </p>
+    <p>
+        In <strong>measure theory</strong>, Lebesgue-Stieltjes integration plays a vital role in defining integrals with respect to general measures, allowing the integration of more general functions and distributions than what is possible with Riemann integration. For example, it is crucial for integrating random variables with respect to measures that are not necessarily absolutely continuous, such as in the case of discrete distributions or distributions with singularities.
+    </p>
+    <p>
+        The versatility of Lebesgue-Stieltjes integration has led to its use in various areas of mathematics and applied fields. In probability theory, it provides a framework for understanding and computing expectations in the context of both discrete and continuous random variables. It is also widely used in stochastic processes, where the integration process is used to model complex random phenomena and time-evolving systems.
+    </p>
+
+    <h2>Riemann Integration</h2>
+    <p>
+        The <strong>Riemann integral</strong> is the classical concept of integration in calculus, where we define the integral of a function over an interval by partitioning the interval into smaller subintervals, computing the sum of the function's values multiplied by the subinterval widths, and taking the limit as the partition gets finer. Mathematically, the Riemann integral of a function \( f \) over the interval \([a, b]\) is expressed as:
+        <br>
+        <i>Riemann Integral:</i>
+        <br>
+        \( \int_a^b f(x) \, dx = \lim_{\|P\| \to 0} \sum_{i=1}^{n} f(x_i^*) \Delta x_i \)
+        <br>
+        where \( P \) is a partition of the interval \([a, b]\), \( x_i^* \) is a sample point from each subinterval, and \( \Delta x_i \) is the width of the subinterval. The limit is taken as the norm of the partition \( \|P\| \) (the width of the largest subinterval) approaches 0.
+    </p>
+    <p>
+        The Riemann integral is well-suited for integrating functions that are continuous over the interval \([a, b]\). However, it has limitations. Specifically, it does not handle discontinuous functions or functions with certain irregularities (e.g., functions with jumps or infinite discontinuities) well. This is where the Lebesgue integral, including Lebesgue-Stieltjes integration, becomes more powerful, as it can handle these types of functions by integrating with respect to a more general measure.
+    </p>
+    <p>
+        Despite its limitations, the Riemann integral remains widely used in many areas of mathematics and applied sciences. It is often used for practical problems in physics, engineering, and economics, where the functions of interest are continuous and smooth over the region of integration. The Riemann integral provides a fundamental understanding of area and accumulation, which is critical in many real-world applications.
+    </p>
+
+</body>
+<body>
+	<title>Lebesgue vs Riemann Integration</title>
+    <script>
+        // Riemann Integral Approximation (simple numerical integration using the trapezoidal rule)
+        function riemannIntegral(f, a, b, n) {
+            let dx = (b - a) / n;
+            let sum = 0;
+            for (let i = 0; i < n; i++) {
+                let x = a + i * dx;
+                sum += f(x);
+            }
+            return sum * dx;
+        }
+
+        // Lebesgue Integral Approximation (using the measure-based approach)
+        function lebesgueIntegral(f, a, b, n) {
+            let dx = (b - a) / n;
+            let sum = 0;
+            for (let i = 0; i < n; i++) {
+                let x = a + i * dx;
+                sum += f(x) * dx; // Since we are already integrating w.r.t measure dx, this is similar to weighted sum
+            }
+            return sum;
+        }
+
+        // Normal distribution pdf for demonstration
+        function normalPDF(x, mean = 0, stddev = 1) {
+            return (1 / (stddev * Math.sqrt(2 * Math.PI))) * Math.exp(-0.5 * Math.pow((x - mean) / stddev, 2));
+        }
+
+        // Mean of normal distribution via Riemann and Lebesgue integration
+        function computeMean(a, b, n, mean = 0, stddev = 1) {
+            const normalFunction = (x) => x * normalPDF(x, mean, stddev);
+            let riemannMean = riemannIntegral(normalFunction, a, b, n);
+            let lebesgueMean = lebesgueIntegral(normalFunction, a, b, n);
+            return { riemannMean, lebesgueMean };
+        }
+
+        // Variance of normal distribution via Riemann and Lebesgue integration
+        function computeVariance(a, b, n, mean = 0, stddev = 1) {
+            const normalFunction = (x) => Math.pow(x - mean, 2) * normalPDF(x, mean, stddev);
+            let riemannVariance = riemannIntegral(normalFunction, a, b, n);
+            let lebesgueVariance = lebesgueIntegral(normalFunction, a, b, n);
+            return { riemannVariance, lebesgueVariance };
+        }
+
+        // Display results on UI
+        function displayResults() {
+            const a = parseFloat(document.getElementById('a').value);
+            const b = parseFloat(document.getElementById('b').value);
+            const n = parseInt(document.getElementById('n').value);
+            const mean = parseFloat(document.getElementById('mean').value);
+            const stddev = parseFloat(document.getElementById('stddev').value);
+
+            // Compute mean and variance
+            const { riemannMean, lebesgueMean } = computeMean(a, b, n, mean, stddev);
+            const { riemannVariance, lebesgueVariance } = computeVariance(a, b, n, mean, stddev);
+
+            // Display results
+            document.getElementById('meanResult').innerText = `Riemann Mean: ${riemannMean.toFixed(4)}, Lebesgue Mean: ${lebesgueMean.toFixed(4)}`;
+            document.getElementById('varianceResult').innerText = `Riemann Variance: ${riemannVariance.toFixed(4)}, Lebesgue Variance: ${lebesgueVariance.toFixed(4)}`;
+        }
+    </script>
+
+    <h1>Lebesgue vs Riemann Integration</h1>
+
+    <div>
+        <label for="a">Lower Bound (a): </label>
+        <input type="number" id="a" value="-5">
+    </div>
+    <div>
+        <label for="b">Upper Bound (b): </label>
+        <input type="number" id="b" value="5">
+    </div>
+    <div>
+        <label for="n">Number of Steps (n): </label>
+        <input type="number" id="n" value="1000">
+    </div>
+    <div>
+        <label for="mean">Mean (μ): </label>
+        <input type="number" id="mean" value="0">
+    </div>
+    <div>
+        <label for="stddev">Standard Deviation (σ): </label>
+        <input type="number" id="stddev" value="1">
+    </div>
+    <button onclick="displayResults()">Compute</button>
+
+    <div>
+        <h2>Results</h2>
+        <p id="meanResult"></p>
+        <p id="varianceResult"></p>
+    </div>
+</body>
+</html>
