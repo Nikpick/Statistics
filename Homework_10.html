@@ -144,9 +144,64 @@
     <canvas id="riemannChart"></canvas>
     <canvas id="lebesgueChart"></canvas>
 
-    <script src="integrals.js"></script>
 
     <script>
+
+        // Function to calculate the Riemann integral
+        function calculate2Riemann(f, a, b, n) {
+            const dx = (b - a) / n; // Width of each slice
+            let totalArea = 0;
+
+            for (let i = 0; i < n; i++) {
+                const xMid = a + i * dx + dx / 2; // Midpoint of the slice
+                const height = f(xMid); // Function value at midpoint
+                totalArea += height * dx; // Area of the rectangle
+            }
+
+            return totalArea;
+        }
+
+        // Function to calculate the Lebesgue integral
+        function calculate2Lebesgue(func, lower, upper, steps) {
+            const dx = (upper - lower) / steps; // Width of each slice in the domain
+            let values = [];
+
+            // Step 1: Sample the function over the domain and store (x, y) pairs
+            for (let i = 0; i < steps; i++) {
+                const x = lower + i * dx; // Current x-value
+                const y = func(x);       // Evaluate function at x
+                values.push({ x, y });   // Store (x, y)
+            }
+
+            // Step 2: Sort the values by y (ascending) for Lebesgue integration
+            values.sort((a, b) => a.y - b.y);
+
+            // Step 3: Initialize variables for integration
+            let lebIntegral = 0;        // Total Lebesgue integral
+            let dy = values[0].y;       // Start with the smallest y-value
+            let currentMeasure = 0;     // Accumulated "measure" (width in x)
+
+            // Step 4: Traverse the sorted values to compute horizontal slices
+            for (let i = 0; i < values.length; i++) {
+                const y = values[i].y; // Current y-value
+
+                // If the y-value changes, add the area of the previous band
+                if (Math.abs(y - dy) > 1e-10) { // Significant change in y
+                    lebIntegral += dy * currentMeasure; // Add area of the band
+                    dy = y;                            // Update current y-value
+                    currentMeasure = dx;               // Reset measure for the new band
+                } else {
+                    currentMeasure += dx; // Accumulate measure for the current band
+                }
+            }
+
+            // Step 5: Add the area of the last band
+            lebIntegral += dy * currentMeasure;
+
+            // Return the computed Lebesgue integral
+            return lebIntegral;
+        }
+
         // Declare chart instances as global variables
         let riemannChart = null;
         let lebesgueChart = null;
@@ -155,28 +210,20 @@
         const functions = [
             { func: (x) => x ^ 2, label: "f(x) = x^2" },
             { func: (x) => x ^ 3, label: "f(x) = x^3" },
-            { func: (x) => Math.sin(x), label: "f(x) = sin(x)" },
             { func: (x) => Math.abs(x), label: "f(x) = |x|" },
             { func: (x) => Math.exp(-x ^ 2), label: "f(x) = exp(-x^2)" },
             { func: (x) => Math.cos(x), label: "f(x) = cos(x)" },
-            { func: (x) => Math.tan(x), label: "f(x) = tan(x)" }, // Avoid vertical asymptotes with proper bounds
             { func: (x) => Math.sqrt(Math.abs(x)), label: "f(x) = sqrt(|x|)" },
             { func: (x) => Math.log(Math.abs(x) + 1), label: "f(x) = log(|x| + 1)" },
             { func: (x) => Math.exp(x), label: "f(x) = exp(x)" },
             { func: (x) => Math.exp(-Math.abs(x)), label: "f(x) = exp(-|x|)" },
-            { func: (x) => x % 1, label: "f(x) = x % 1 (fractional part of x)" },
-            { func: (x) => Math.sign(x), label: "f(x) = sign(x)" },
-            { func: (x) => Math.sin(2 * x), label: "f(x) = sin(2x)" },
             { func: (x) => Math.sin(x) ^ 2, label: "f(x) = sin^2(x)" },
             { func: (x) => Math.cos(x) ^ 2, label: "f(x) = cos^2(x)" },
             { func: (x) => Math.pow(x, 4), label: "f(x) = x^4" },
-            { func: (x) => x ^ (1 / 3), label: "f(x) = x^(1/3)" },
             { func: (x) => Math.log2(Math.abs(x) + 1), label: "f(x) = log2(|x| + 1)" },
             { func: (x) => Math.floor(x), label: "f(x) = floor(x)" },
             { func: (x) => Math.ceil(x), label: "f(x) = ceil(x)" },
             { func: (x) => Math.abs(x ^ 3 - x), label: "f(x) = |x^3 - x|" },
-            { func: (x) => Math.atan(x), label: "f(x) = arctan(x)" },
-            { func: (x) => Math.cbrt(x), label: "f(x) = cbrt(x) (cube root of x)" },
         ];
 
 
@@ -184,22 +231,19 @@
         let lowerBound = -2;
         let upperBound = 2;
         let numSlices = 10;
-        let selectedFunction = functions[7]; // Default function
+        let selectedFunction = functions[0]; // Default function
 
-        // Function to calculate Riemann rectangles
+        // Function to calculate the Riemann integral
         function calculateRiemann(f, a, b, n) {
-            const dx = (b - a) / n;
+            const dx = (b - a) / n; // Width of each slice
             const rectangles = [];
             let totalArea = 0;
 
             for (let i = 0; i < n; i++) {
-                const xLeft = a + i * dx;
-                const xMid = xLeft + dx / 2;
-                const height = f(xMid);
-                const area = height * dx;
-                totalArea += area;
-
-                rectangles.push({ x: xLeft, dx, height });
+                const xMid = a + i * dx + dx / 2; // Midpoint of the slice
+                const height = f(xMid); // Function value at midpoint
+                totalArea += height * dx; // Area of the rectangle
+                rectangles.push({ x: a + i * dx, dx, height }); // Store rectangle data for visualization
             }
 
             return { rectangles, totalArea };
@@ -212,18 +256,18 @@
             const ctx = document.getElementById("riemannChart").getContext("2d");
 
             // Destroy previous chart if it exists
-            if (riemannChart) riemannChart.destroy();
+            if (window.riemannChart instanceof Chart) window.riemannChart.destroy();
 
             // Bar chart for Riemann rectangles
-            riemannChart = new Chart(ctx, {
+            window.riemannChart = new Chart(ctx, {
                 type: "bar",
                 data: {
-                    labels: rectangles.map((r) => r.x.toFixed(2)),
+                    labels: rectangles.map((r) => r.x.toFixed(2)), // X-coordinates
                     datasets: [
                         {
                             label: `Riemann Rectangles (Integral of ${selectedFunction.label} ≈ ${totalArea.toFixed(3)})`,
-                            data: rectangles.map((r) => r.height),
-                            backgroundColor: "rgba(54, 162, 235, 0.5)",
+                            data: rectangles.map((r) => r.height), // Heights of rectangles
+                            backgroundColor: "rgba(54, 162, 235, 0.5)", // Blue bars
                             borderWidth: 1,
                         },
                     ],
@@ -235,107 +279,101 @@
                             text: `Riemann Integral Approximation (${selectedFunction.label}): ${totalArea.toFixed(3)}`,
                         },
                     },
-                    scales: {
-                        x: { title: { display: true, text: "x" } },
-                        y: { title: { display: true, text: "f(x)" } },
-                    },
                 },
             });
         }
 
-        // Function to calculate the Lebesgue integral using horizontal bands
-        function calculateLebesgue(f, a, b, n) {
-            const dx = (b - a) / 1000; // Fine sampling for the width of x
-            const functionValues = []; // Store sampled points (x, f(x))
+        // Function to calculate the Lebesgue integral with axes inverted
+        function calculateLebesgue(func, lower, upper, steps) {
+            const dx = (upper - lower) / steps; // Width of each slice in the domain
+            let values = [];
 
-            // Sample f(x) across the interval [a, b]
-            for (let x = a; x <= b; x += dx) {
-                functionValues.push({ x: x, y: f(x) });
+            // Step 1: Sample the function over the domain and store (x, y) pairs
+            for (let i = 0; i < steps; i++) {
+                const x = lower + i * dx; // Current x-value
+                const y = func(x); // Evaluate function at x
+                values.push({ x, y }); // Store (x, y)
             }
 
-            // Determine the range of f(x) (min and max)
-            const minY = Math.min(...functionValues.map((p) => p.y));
-            const maxY = Math.max(...functionValues.map((p) => p.y));
-            const dy = (maxY - minY) / n; // Vertical slice height for Lebesgue bands
+            // Step 2: Sort the values by y (ascending) for Lebesgue integration
+            values.sort((a, b) => a.y - b.y);
 
-            const bands = []; // Holds the information for positive and negative bands
-            let totalPositiveArea = 0;
-            let totalNegativeArea = 0;
+            // Step 3: Initialize variables for integration
+            let lebIntegral = 0; // Total Lebesgue integral
+            let dy = values[0].y; // Start with the smallest y-value
+            let currentMeasure = 0; // Accumulated "measure" (width in x)
+            const bands = []; // Store bands for visualization
 
-            // For each horizontal band
-            for (let i = 0; i < n; i++) {
-                const lowerY = minY + i * dy;
-                const upperY = lowerY + dy;
+            // Step 4: Traverse the sorted values to compute horizontal slices
+            for (let i = 0; i < values.length; i++) {
+                const y = values[i].y; // Current y-value
 
-                // Filter the x-values where f(x) is within the band [lowerY, upperY)
-                const widthSegments = functionValues.filter(
-                    (point) => point.y >= lowerY && point.y < upperY
-                );
-
-                const totalWidth = widthSegments.length * dx; // Approximate width
-
-                // Calculate the area for the band
-                const bandArea = totalWidth * (lowerY + dy / 2); // Use mid-band height for accuracy
-
-                if (lowerY > 0) {
-                    totalPositiveArea += bandArea; // Add to positive area
-                } else if (lowerY < 0) {
-                    totalNegativeArea += bandArea; // Add to negative area
+                // If the y-value changes, add the area of the previous band
+                if (Math.abs(y - dy) > 1e-10) { // Significant change in y
+                    lebIntegral += dy * currentMeasure; // Add area of the band
+                    bands.push({ x: currentMeasure, y: dy }); // Store band data
+                    dy = y; // Update current y-value
+                    currentMeasure = dx; // Reset measure for the new band
+                } else {
+                    currentMeasure += dx; // Accumulate measure for the current band
                 }
-
-                // Push the band information (positive and negative separately)
-                bands.push({ y: lowerY + dy / 2, width: totalWidth });
             }
 
-            return { bands, totalPositiveArea, totalNegativeArea };
+            // Step 5: Add the area of the last band
+            lebIntegral += dy * currentMeasure;
+            bands.push({ x: currentMeasure, y: dy }); // Push the last band
+
+            // Return the computed Lebesgue integral and bands
+            return { bands, totalArea: lebIntegral };
         }
 
-        // Plot the Lebesgue integral with horizontal bands
-        function plotLebesgue() {
-            const lowerBound = parseFloat(document.getElementById("lowerBound").value);
-            const upperBound = parseFloat(document.getElementById("upperBound").value);
-            const numSlices = parseInt(document.getElementById("numSlices").value);
-
-            // Example function (cosine function)
-            const f = (x) => Math.cos(x);
-
-            // Calculate the Lebesgue integral
-            const { bands, totalPositiveArea, totalNegativeArea } = calculateLebesgue(f, lowerBound, upperBound, numSlices);
+        // Plot the Lebesgue integral with inverted axes
+        function plotLebesgue(func, lower, upper, steps) {
+            const { bands, totalArea } = calculateLebesgue(func, lower, upper, steps);
 
             const ctx = document.getElementById("lebesgueChart").getContext("2d");
 
             // Destroy the previous chart if it exists
-            if (lebesgueChart) lebesgueChart.destroy();
+            if (window.lebesgueChart instanceof Chart) window.lebesgueChart.destroy();
 
             // Create the Lebesgue chart
-            lebesgueChart = new Chart(ctx, {
+            window.lebesgueChart = new Chart(ctx, {
                 type: "bar",
                 data: {
-                    labels: bands.map((b) => b.y.toFixed(2)), // y-values as labels
+                    labels: bands.map((b) => b.x.toFixed(2)), // Widths of the bands (x-axis values)
                     datasets: [
                         {
-                            label: `Positive Area: ${totalPositiveArea.toFixed(3)}`,
-                            data: bands.map((b) => (b.y > 0 ? b.width : 0)), // Positive bands
-                            backgroundColor: "rgba(54, 162, 235, 0.5)", // Blue for positive areas
-                        },
-                        {
-                            label: `Negative Area: ${totalNegativeArea.toFixed(3)}`,
-                            data: bands.map((b) => (b.y < 0 ? b.width : 0)), // Negative bands
-                            backgroundColor: "rgba(255, 99, 132, 0.5)", // Red for negative areas
+                            label: `Lebesgue Integral (Area ≈ ${totalArea.toFixed(3)})`,
+                            data: bands.map((b) => b.y), // Heights of the bands (y-axis values)
+                            backgroundColor: "rgba(250, 150, 150, 0.5)", // Blue bars
+                            borderColor: "rgba(250, 150, 150, 1)",
+                            borderWidth: 1,
                         },
                     ],
                 },
                 options: {
-                    indexAxis: "y", // Flip axes for horizontal bars
+                    indexAxis: "x", // Ensure the bars are vertical (x-axis is horizontal)
+                    scales: {
+                        x: {
+                            title: {
+                                display: true,
+                                text: "Measure of Interval (x-width)",
+                            },
+                            beginAtZero: true,
+                        },
+                        y: {
+                            title: {
+                                display: true,
+                                text: "Function Value (y)",
+                            },
+                            beginAtZero: true,
+                        },
+                    },
                     plugins: {
                         title: {
                             display: true,
-                            text: `Lebesgue Integral Approximation (f(x) = cos(x)): Positive: ${totalPositiveArea.toFixed(3)}, Negative: ${totalNegativeArea.toFixed(3)}`,
+                            text: `Lebesgue Integral Approximation`,
                         },
-                    },
-                    scales: {
-                        y: { title: { display: true, text: "Width of x (dx)" } },
-                        x: { title: { display: true, text: "f(x)" } },
                     },
                 },
             });
@@ -353,6 +391,13 @@
             // Plot Riemann and Lebesgue integrals
             plotRiemann(selectedFunction.func, lowerBound, upperBound, numSlices);
             plotLebesgue(selectedFunction.func, lowerBound, upperBound, numSlices);
+
+            // Calculate Riemann and Lebesgue integrals
+            const riemannResult = calculate2Riemann(selectedFunction.func, lowerBound, upperBound, numSlices);
+            const lebesgueResult = calculate2Lebesgue(selectedFunction.func, lowerBound, upperBound, numSlices);
+
+            console.log("Riemann Integral:", riemannResult, "f:", selectedFunction.label, "a:", lowerBound, "b:", upperBound, "n:", numSlices);
+            console.log("Lebesgue Integral:", lebesgueResult, "f:", selectedFunction.label, "a:", lowerBound, "b:", upperBound, "n:", numSlices);
         }
 
         // Initial plot
